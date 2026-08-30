@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "786785765965",
+    "project_id": "unisphere-2b0c2",
+    "storage_bucket": "unisphere-2b0c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786785765965:android:796b00bde38bd94c5aaa04",
+        "android_client_info": {
+          "package_name": "com.sachi.unisphere"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjw50Fb9X86SOlaHiPMSryuyBu15oEOAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
