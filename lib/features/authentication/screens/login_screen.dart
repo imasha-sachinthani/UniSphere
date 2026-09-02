@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
-import '../../home/screens/home_screen.dart';
+
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
