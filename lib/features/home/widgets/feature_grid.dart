@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../assignments/screens/assignment_screen.dart';
 import '../../lost_found/screens/lost_found_screen.dart';
 import '../../marketplace/screens/marketplace_screen.dart';
-import '../../notices/screens/notices_screen.dart';
+import '../../notices/screens/notice_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../../timetable/screens/timetable_screen.dart';
 
