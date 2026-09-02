@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../assignments/screens/assignment_screen.dart';
+import '../../lost_found/screens/lost_found_screen.dart';
+import '../../marketplace/screens/marketplace_screen.dart';
+import '../../notices/screens/notices_screen.dart';
+import '../../profile/screens/profile_screen.dart';
+import '../../timetable/screens/timetable_screen.dart';
+
 import 'dashboard_card.dart';
 
 class FeatureGrid extends StatelessWidget {
@@ -14,49 +21,89 @@ class FeatureGrid extends StatelessWidget {
       crossAxisSpacing: 18,
       mainAxisSpacing: 18,
       childAspectRatio: 1.15,
-
       children: [
-
         DashboardCard(
           icon: Icons.calendar_month,
           title: "Timetable",
           color: Colors.blue,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const TimetableScreen(),
+              ),
+            );
+          },
         ),
 
         DashboardCard(
           icon: Icons.assignment,
           title: "Assignments",
           color: Colors.green,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const AssignmentScreen(),
+              ),
+            );
+          },
         ),
 
         DashboardCard(
           icon: Icons.campaign,
           title: "Notices",
           color: Colors.orange,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const NoticeScreen(),
+              ),
+            );
+          },
         ),
 
         DashboardCard(
           icon: Icons.shopping_bag,
           title: "Marketplace",
           color: Colors.purple,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const MarketplaceScreen(),
+              ),
+            );
+          },
         ),
 
         DashboardCard(
           icon: Icons.search,
           title: "Lost & Found",
           color: Colors.red,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const LostFoundScreen(),
+              ),
+            );
+          },
         ),
 
         DashboardCard(
           icon: Icons.person,
           title: "Profile",
           color: Colors.teal,
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProfileScreen(),
+              ),
+            );
+          },
         ),
       ],
     );

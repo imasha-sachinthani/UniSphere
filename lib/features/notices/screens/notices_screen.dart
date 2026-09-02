@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
-class NoticesScreen extends StatelessWidget {
-  const NoticesScreen({super.key});
+class NoticeScreen extends StatelessWidget {
+  const NoticeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Notices"),
+      ),
+      body: const Center(
         child: Text(
-          "Notices",
+          "Notice Module\nComing Soon",
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),

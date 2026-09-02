@@ -5,12 +5,16 @@ class LostFoundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Lost & Found"),
+      ),
+      body: const Center(
         child: Text(
-          "Lost & Found",
+          "Lost & Found Module\nComing Soon",
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -5,12 +5,16 @@ class MarketplaceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Marketplace"),
+      ),
+      body: const Center(
         child: Text(
-          "Marketplace",
+          "Marketplace Module\nComing Soon",
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),

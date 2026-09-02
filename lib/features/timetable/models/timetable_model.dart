@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TimetableModel {
   final String id;
   final String subject;
@@ -19,31 +21,30 @@ class TimetableModel {
     required this.color,
   });
 
-  factory TimetableModel.fromMap(
-      Map<String, dynamic> map,
-      String id,
-      ) {
+  factory TimetableModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
     return TimetableModel(
-      id: id,
-      subject: map["subject"],
-      lecturer: map["lecturer"],
-      room: map["room"],
-      day: map["day"],
-      startTime: map["startTime"],
-      endTime: map["endTime"],
-      color: map["color"],
+      id: doc.id,
+      subject: data['subject'],
+      lecturer: data['lecturer'],
+      room: data['room'],
+      day: data['day'],
+      startTime: data['startTime'],
+      endTime: data['endTime'],
+      color: data['color'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "subject": subject,
-      "lecturer": lecturer,
-      "room": room,
-      "day": day,
-      "startTime": startTime,
-      "endTime": endTime,
-      "color": color,
+      'subject': subject,
+      'lecturer': lecturer,
+      'room': room,
+      'day': day,
+      'startTime': startTime,
+      'endTime': endTime,
+      'color': color,
     };
   }
 }

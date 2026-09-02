@@ -18,14 +18,14 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
 
-  final List<Widget> pages = const [
-    HomeScreen(),
-    TimetableScreen(),
-    AssignmentScreen(),
-    NoticesScreen(),
-    MarketplaceScreen(),
-    LostFoundScreen(),
-    ProfileScreen(),
+  final List<Widget> pages = [
+    const HomeScreen(),
+    const TimetableScreen(),
+    const AssignmentScreen(),
+    const NoticeScreen(),
+    const MarketplaceScreen(),
+    const LostFoundScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -44,7 +44,6 @@ class _MainNavigationState extends State<MainNavigation> {
         },
 
         items: const [
-
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
@@ -62,12 +61,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
           BottomNavigationBarItem(
             icon: Icon(Icons.campaign),
-            label: "Notices",
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: "Market",
+            label: "News",
           ),
 
           BottomNavigationBarItem(
