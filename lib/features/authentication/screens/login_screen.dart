@@ -7,6 +7,7 @@ import '../widgets/auth_button.dart';
 import '../widgets/auth_textfield.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
+import '../../home/screens/main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -55,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const MainNavigation(),
         ),
       );
     } else {
