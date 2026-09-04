@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../settings/screens/settings_screen.dart';
 import '../controllers/profile_controller.dart';
 import '../models/user_profile_model.dart';
 import '../widgets/edit_profile_dialog.dart';
@@ -10,142 +11,303 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final uid =
-        FirebaseAuth.instance.currentUser!.uid;
+    final uid = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
+        appBar: AppBar(
+          title: const Text("My Profile"),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                    const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
 
-      appBar: AppBar(
-        title: const Text("Profile"),
-        centerTitle: true,
-      ),
+        body: StreamBuilder<UserProfileModel?>(
+            stream:
+            ProfileController.getProfile(uid),
 
-      body: StreamBuilder<UserProfileModel?>(
-        stream:
-        ProfileController.getProfile(uid),
+            builder: (context, snapshot) {
 
-        builder: (context, snapshot) {
+              if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return const Center(
+                  child:
+                  CircularProgressIndicator(),
+                );
+              }
 
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    snapshot.error.toString(),
+                  ),
+                );
+              }
 
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+              if (!snapshot.hasData) {
+                return const Center(
+                  child:
+                  Text("Profile Not Found"),
+                );
+              }
 
-          if (!snapshot.hasData) {
+              final profile = snapshot.data!;
 
-            return const Center(
-              child: Text("Profile Not Found"),
-            );
-          }
+              return ListView(
+                padding:
+                const EdgeInsets.all(20),
 
-          final profile = snapshot.data!;
+                children: [
 
-          return ListView(
-
-            padding:
-            const EdgeInsets.all(20),
-
-            children: [
-
-              CircleAvatar(
-                radius: 55,
+              Center(
+              child: CircleAvatar(
+              radius: 60,
+                backgroundColor:
+                Colors.grey.shade200,
                 backgroundImage:
-                profile.imageUrl.isEmpty
-                    ? null
-                    : NetworkImage(
-                  profile.imageUrl,
-                ),
-                child: profile.imageUrl.isEmpty
-                    ? const Icon(
-                  Icons.person,
-                  size: 55,
+                profile.imageUrl
+                    .isNotEmpty
+                    ? NetworkImage(
+                  profile
+                      .imageUrl,
                 )
                     : null,
+                onBackgroundImageError:
+                    (_, __) {},
+                child:
+                profile.imageUrl.isEmpty
+                    ? const Icon(
+                  Icons.person,
+                  size: 60,
+                )
+                    : null,
+              ),
               ),
 
               const SizedBox(height: 20),
 
               Center(
-                child: Text(
-                  profile.fullName,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight:
-                    FontWeight.bold,
-                  ),
-                ),
+              child: Text(
+              profile.fullName.isEmpty
+              ? "Unknown User"
+                  : profile.fullName,
+              style:
+              const TextStyle(
+              fontSize: 24,
+              fontWeight:
+              FontWeight.bold,
+              ),
+              ),
+              ),
+
+              const SizedBox(height: 6),
+
+              Center(
+              child: Text(
+              profile.email,
+              style: TextStyle(
+              color: Colors
+                  .grey.shade600,
+              fontSize: 15,
+              ),
+              ),
               ),
 
               const SizedBox(height: 30),
 
-              ListTile(
-                leading: const Icon(Icons.email),
-                title: Text(profile.email),
+              Card(
+              elevation: 2,
+              shape:
+              RoundedRectangleBorder(
+              borderRadius:
+              BorderRadius.circular(
+              16),
               ),
-
-              ListTile(
-                leading: const Icon(Icons.phone),
-                title: Text(profile.phone),
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.school),
-                title: Text(profile.faculty),
-              ),
+              child: Column(
+              children: [
 
               ListTile(
-                leading:
-                const Icon(Icons.calendar_today),
-                title: Text(profile.year),
+              leading:
+              const Icon(
+              Icons.phone,
+              color:
+              Colors.blue,
+              ),
+              title: const Text(
+              "Phone",
+              ),
+              subtitle: Text(
+              profile.phone
+                  .isEmpty
+              ? "-"
+                  : profile
+                  .phone,
+              ),
               ),
 
-              const SizedBox(height: 25),
+              const Divider(
+              height: 1),
 
-              ElevatedButton.icon(
-
-                onPressed: () {
-
-                  showDialog(
-                    context: context,
-                    builder: (_) =>
-                        EditProfileDialog(
-                          profile: profile,
-                        ),
-                  );
-                },
-
-                icon: const Icon(Icons.edit),
-
-                label:
-                const Text("Edit Profile"),
+              ListTile(
+              leading:
+              const Icon(
+              Icons.school,
+              color: Colors
+                  .deepPurple,
+              ),
+              title: const Text(
+              "Faculty",
+              ),
+              subtitle: Text(
+              profile.faculty
+                  .isEmpty
+              ? "-"
+                  : profile
+                  .faculty,
+              ),
               ),
 
-              const SizedBox(height: 15),
+              const Divider(
+              height: 1),
 
-              ElevatedButton.icon(
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-
-                onPressed: () async {
-
-                  await FirebaseAuth.instance
-                      .signOut();
-                },
-
-                icon: const Icon(Icons.logout),
-
-                label: const Text("Logout"),
+              ListTile(
+              leading:
+              const Icon(
+              Icons
+                  .calendar_today,
+              color: Colors
+                  .orange,
               ),
-            ],
-          );
-        },
-      ),
+              title: const Text(
+              "Academic Year",
+              ),
+              subtitle: Text(
+              profile.year
+                  .isEmpty
+              ? "-"
+                  : profile
+                  .year,
+              ),
+              ),
+              ],
+              ),
+              ),
+
+                  const SizedBox(height: 30),
+
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.edit),
+                      label: const Text(
+                        "Edit Profile",
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) =>
+                              EditProfileDialog(
+                                profile: profile,
+                              ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  SizedBox(
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.logout),
+                      label: const Text("Logout"),
+                      onPressed: () async {
+
+                        final confirm =
+                        await showDialog<bool>(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text(
+                              "Logout",
+                            ),
+                            content: const Text(
+                              "Are you sure you want to logout?",
+                            ),
+                            actions: [
+
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(
+                                    context,
+                                    false,
+                                  );
+                                },
+                                child: const Text(
+                                  "Cancel",
+                                ),
+                              ),
+
+                              ElevatedButton(
+                                style:
+                                ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                  Colors.red,
+                                  foregroundColor:
+                                  Colors.white,
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(
+                                    context,
+                                    true,
+                                  );
+                                },
+                                child: const Text(
+                                  "Logout",
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          await FirebaseAuth.instance
+                              .signOut();
+                        }
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  Center(
+                    child: Text(
+                      "UniSphere v1.0.0",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+                ],
+              );
+            },
+        ),
     );
   }
 }

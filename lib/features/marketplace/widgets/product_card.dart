@@ -27,7 +27,6 @@ class ProductCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: product.imageUrl.isEmpty
@@ -45,6 +44,21 @@ class ProductCard extends StatelessWidget {
                 width: 90,
                 height: 90,
                 fit: BoxFit.cover,
+                errorBuilder: (
+                    context,
+                    error,
+                    stackTrace,
+                    ) {
+                  return Container(
+                    width: 90,
+                    height: 90,
+                    color: Colors.grey.shade300,
+                    child: const Icon(
+                      Icons.broken_image,
+                      size: 40,
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -55,7 +69,6 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment:
                 CrossAxisAlignment.start,
                 children: [
-
                   Text(
                     product.title,
                     style: const TextStyle(
@@ -95,19 +108,23 @@ class ProductCard extends StatelessWidget {
               ),
             ),
 
-            PopupMenuButton(
-              itemBuilder: (_) => [
-
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == "edit") {
+                  onEdit();
+                } else if (value == "delete") {
+                  onDelete();
+                }
+              },
+              itemBuilder: (context) => const [
                 PopupMenuItem(
-                  onTap: onEdit,
-                  child: const Text("Edit"),
+                  value: "edit",
+                  child: Text("Edit"),
                 ),
-
                 PopupMenuItem(
-                  onTap: onDelete,
-                  child: const Text("Delete"),
+                  value: "delete",
+                  child: Text("Delete"),
                 ),
-
               ],
             ),
           ],

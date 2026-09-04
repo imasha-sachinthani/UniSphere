@@ -15,182 +15,247 @@ class LostFoundScreen extends StatefulWidget {
 
 class _LostFoundScreenState
     extends State<LostFoundScreen> {
+  final TextEditingController searchController =
+  TextEditingController();
+
+  String searchText = "";
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Lost & Found"),
         centerTitle: true,
       ),
 
-      body: StreamBuilder<List<LostFoundModel>>(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                16, 16, 16, 8),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: "Search lost items...",
+                prefixIcon:
+                const Icon(Icons.search),
+                suffixIcon:
+                searchText.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(
+                      Icons.clear),
+                  onPressed: () {
+                    searchController
+                        .clear();
 
-        stream:
-        LostFoundController.getItems(),
-
-        builder: (context, snapshot) {
-
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (snapshot.hasError) {
-
-            return Center(
-              child: Text(
-                snapshot.error.toString(),
+                    setState(() {
+                      searchText = "";
+                    });
+                  },
+                )
+                    : null,
+                border:
+                OutlineInputBorder(
+                  borderRadius:
+                  BorderRadius.circular(
+                      12),
+                ),
               ),
-            );
-          }
+              onChanged: (value) {
+                setState(() {
+                  searchText =
+                      value.toLowerCase();
+                });
+              },
+            ),
+          ),
 
-          if (!snapshot.hasData ||
-              snapshot.data!.isEmpty) {
+          Expanded(
+            child:
+            StreamBuilder<List<LostFoundModel>>(
+              stream:
+              LostFoundController.getItems(),
 
-            return const Center(
-              child: Column(
-                mainAxisAlignment:
-                MainAxisAlignment.center,
-                children: [
-
-                  Icon(
-                    Icons.search,
-                    size: 80,
-                    color: Colors.grey,
-                  ),
-
-                  SizedBox(height: 20),
-
-                  Text(
-                    "No Lost Items",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight:
-                      FontWeight.bold,
-                    ),
-                  ),
-
-                  SizedBox(height: 8),
-
-                  Text(
-                    "Tap + to add an item.",
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final items = snapshot.data!;
-
-          return ListView.builder(
-
-            padding:
-            const EdgeInsets.all(16),
-
-            itemCount: items.length,
-
-            itemBuilder: (context, index) {
-
-              final item = items[index];
-
-              return LostItemCard(
-
-                item: item,
-
-                onEdit: () {
-
-                  showDialog(
-
-                    context: context,
-
-                    builder: (_) =>
-                        AddLostItemDialog(
-                          item: item,
-                        ),
+              builder:
+                  (context, snapshot) {
+                if (snapshot
+                    .connectionState ==
+                    ConnectionState
+                        .waiting) {
+                  return const Center(
+                    child:
+                    CircularProgressIndicator(),
                   );
-                },
+                }
 
-                onDelete: () async {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      snapshot.error
+                          .toString(),
+                    ),
+                  );
+                }
 
-                  final confirm =
-                  await showDialog<bool>(
+                if (!snapshot.hasData) {
+                  return const SizedBox();
+                }
 
-                    context: context,
+                List<LostFoundModel> items =
+                snapshot.data!;
 
-                    builder: (_) => AlertDialog(
+                if (searchText
+                    .isNotEmpty) {
+                  items = items
+                      .where((item) {
+                    return item.title
+                        .toLowerCase()
+                        .contains(
+                        searchText) ||
+                        item.description
+                            .toLowerCase()
+                            .contains(
+                            searchText) ||
+                        item.location
+                            .toLowerCase()
+                            .contains(
+                            searchText);
+                  }).toList();
+                }
 
-                      title:
-                      const Text("Delete"),
-
-                      content: const Text(
-                        "Delete this item?",
-                      ),
-
-                      actions: [
-
-                        TextButton(
-
-                          onPressed: () {
-                            Navigator.pop(
-                                context,
-                                false);
-                          },
-
-                          child: const Text(
-                            "Cancel",
-                          ),
+                if (items.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment:
+                      MainAxisAlignment
+                          .center,
+                      children: [
+                        Icon(
+                          Icons.search_off,
+                          size: 80,
+                          color: Colors.grey,
                         ),
-
-                        ElevatedButton(
-
-                          onPressed: () {
-                            Navigator.pop(
-                                context,
-                                true);
-                          },
-
-                          child: const Text(
-                            "Delete",
+                        SizedBox(height: 20),
+                        Text(
+                          "No Lost Items Found",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight:
+                            FontWeight
+                                .bold,
                           ),
                         ),
                       ],
                     ),
                   );
+                }
 
-                  if (confirm == true) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {});
+                  },
+                  child:
+                  ListView.builder(
+                    padding:
+                    const EdgeInsets
+                        .all(16),
+                    itemCount:
+                    items.length,
+                    itemBuilder:
+                        (context,
+                        index) {
+                      final item =
+                      items[index];
 
-                    await LostFoundController
-                        .deleteItem(
-                      item.id,
-                    );
-                  }
-                },
-              );
-            },
-          );
-        },
+                      return LostItemCard(
+                        item: item,
+
+                        onEdit: () {
+                          showDialog(
+                            context:
+                            context,
+                            builder:
+                                (_) =>
+                                AddLostItemDialog(
+                                  item: item,
+                                ),
+                          );
+                        },
+
+                        onDelete:
+                            () async {
+                          final confirm =
+                          await showDialog<
+                              bool>(
+                            context:
+                            context,
+                            builder:
+                                (_) =>
+                                AlertDialog(
+                                  title:
+                                  const Text(
+                                      "Delete Item"),
+                                  content:
+                                  const Text(
+                                      "Are you sure you want to delete this item?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () {
+                                        Navigator.pop(
+                                            context,
+                                            false);
+                                      },
+                                      child:
+                                      const Text(
+                                          "Cancel"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () {
+                                        Navigator.pop(
+                                            context,
+                                            true);
+                                      },
+                                      child:
+                                      const Text(
+                                          "Delete"),
+                                    ),
+                                  ],
+                                ),
+                          );
+
+                          if (confirm ==
+                              true) {
+                            await LostFoundController
+                                .deleteItem(
+                              item.id,
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton:
-      FloatingActionButton(
-
-        child: const Icon(Icons.add),
-
+      FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text("Add"),
         onPressed: () {
-
           showDialog(
-
             context: context,
-
             builder: (_) =>
             const AddLostItemDialog(),
           );

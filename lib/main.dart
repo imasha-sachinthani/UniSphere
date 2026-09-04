@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'core/providers/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'firebase_options.dart';
@@ -12,7 +14,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const UniSphereApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: const UniSphereApp(),
+    ),
+  );
 }
 
 class UniSphereApp extends StatelessWidget {
@@ -20,11 +27,22 @@ class UniSphereApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'UniSphere',
-      theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'UniSphere',
+
+          theme: AppTheme.lightTheme,
+
+          // අපි next step එකේ හදනවා
+          darkTheme: ThemeData.dark(),
+
+          themeMode: themeProvider.themeMode,
+
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

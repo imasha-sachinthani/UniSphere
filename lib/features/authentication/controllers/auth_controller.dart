@@ -51,6 +51,7 @@ class AuthController {
 
     try {
       await AuthService.register(
+        fullName: fullName.trim(),
         email: email.trim(),
         password: password.trim(),
       );

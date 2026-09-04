@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/image_picker_service.dart';
+import '../../../../core/services/storage_service.dart';
 import '../controllers/lost_found_controller.dart';
 import '../models/lost_found_model.dart';
 
@@ -25,30 +29,63 @@ class _AddLostItemDialogState
   TextEditingController();
   final locationController =
   TextEditingController();
-  final imageController =
-  TextEditingController();
+
+  File? selectedImage;
 
   bool claimed = false;
+  bool isUploading = false;
+
+  String existingImageUrl = "";
 
   @override
   void initState() {
     super.initState();
 
     if (widget.item != null) {
-      titleController.text = widget.item!.title;
+      titleController.text =
+          widget.item!.title;
+
       descriptionController.text =
           widget.item!.description;
+
       locationController.text =
           widget.item!.location;
-      imageController.text =
+
+      existingImageUrl =
           widget.item!.imageUrl;
+
       claimed = widget.item!.claimed;
     }
+  }
+
+  Future<void> pickImage() async {
+    final image =
+    await ImagePickerService.pickImage();
+
+    if (image == null) return;
+
+    setState(() {
+      selectedImage = image;
+    });
   }
 
   Future<void> saveItem() async {
     if (!formKey.currentState!.validate()) {
       return;
+    }
+
+    setState(() {
+      isUploading = true;
+    });
+
+    String imageUrl = existingImageUrl;
+
+    if (selectedImage != null) {
+      imageUrl =
+      await StorageService.uploadImage(
+        selectedImage!,
+        "lost_found",
+      );
     }
 
     final item = LostFoundModel(
@@ -58,8 +95,7 @@ class _AddLostItemDialogState
       descriptionController.text.trim(),
       location:
       locationController.text.trim(),
-      imageUrl:
-      imageController.text.trim(),
+      imageUrl: imageUrl,
       claimed: claimed,
       createdAt:
       widget.item?.createdAt ??
@@ -67,9 +103,12 @@ class _AddLostItemDialogState
     );
 
     if (widget.item == null) {
-      await LostFoundController.addItem(item);
+      await LostFoundController.addItem(
+        item,
+      );
     } else {
-      await LostFoundController.updateItem(
+      await LostFoundController
+          .updateItem(
         widget.item!.id,
         item,
       );
@@ -78,6 +117,10 @@ class _AddLostItemDialogState
     if (mounted) {
       Navigator.pop(context);
     }
+
+    setState(() {
+      isUploading = false;
+    });
   }
 
   @override
@@ -95,9 +138,9 @@ class _AddLostItemDialogState
           child: SingleChildScrollView(
             child: Column(
               children: [
-
                 TextFormField(
-                  controller: titleController,
+                  controller:
+                  titleController,
                   decoration:
                   const InputDecoration(
                     labelText: "Item Name",
@@ -119,7 +162,8 @@ class _AddLostItemDialogState
                   maxLines: 3,
                   decoration:
                   const InputDecoration(
-                    labelText: "Description",
+                    labelText:
+                    "Description",
                   ),
                 ),
 
@@ -135,16 +179,73 @@ class _AddLostItemDialogState
                   ),
                 ),
 
+                const SizedBox(height: 20),
+
+                if (selectedImage != null)
+                  ClipRRect(
+                    borderRadius:
+                    BorderRadius.circular(
+                        12),
+                    child: Image.file(
+                      selectedImage!,
+                      height: 180,
+                      width:
+                      double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else if (existingImageUrl
+                    .isNotEmpty)
+                  ClipRRect(
+                    borderRadius:
+                    BorderRadius.circular(
+                        12),
+                    child: Image.network(
+                      existingImageUrl,
+                      height: 180,
+                      width:
+                      double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (context,
+                          error,
+                          stackTrace) {
+                        return Container(
+                          height: 180,
+                          color: Colors
+                              .grey.shade300,
+                          child: const Center(
+                            child: Icon(
+                              Icons
+                                  .broken_image,
+                              size: 50,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
                 const SizedBox(height: 15),
 
-                TextFormField(
-                  controller:
-                  imageController,
-                  decoration:
-                  const InputDecoration(
-                    labelText: "Image URL",
+                OutlinedButton.icon(
+                  onPressed: pickImage,
+                  icon: const Icon(
+                    Icons.photo,
+                  ),
+                  label: const Text(
+                    "Choose Image",
                   ),
                 ),
+
+                if (isUploading)
+                  const Padding(
+                    padding:
+                    EdgeInsets.only(
+                        top: 15),
+                    child:
+                    CircularProgressIndicator(),
+                  ),
 
                 const SizedBox(height: 10),
 
@@ -165,16 +266,15 @@ class _AddLostItemDialogState
         ),
       ),
       actions: [
-
         TextButton(
           onPressed: () {
             Navigator.pop(context);
           },
           child: const Text("Cancel"),
         ),
-
         ElevatedButton(
-          onPressed: saveItem,
+          onPressed:
+          isUploading ? null : saveItem,
           child: Text(
             widget.item == null
                 ? "Save"

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/dashboard_overview.dart';
 import '../widgets/feature_grid.dart';
 import '../widgets/search_box.dart';
 import '../widgets/welcome_header.dart';
@@ -10,7 +11,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("UniSphere"),
         centerTitle: true,
@@ -18,7 +18,6 @@ class HomeScreen extends StatelessWidget {
 
       body: SafeArea(
         child: SingleChildScrollView(
-
           padding: const EdgeInsets.all(20),
 
           child: Column(
@@ -31,6 +30,10 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 25),
 
               const SearchBox(),
+
+              const SizedBox(height: 25),
+
+              const DashboardOverview(),
 
               const SizedBox(height: 30),
 

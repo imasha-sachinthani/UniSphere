@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/image_picker_service.dart';
+import '../../../../core/services/storage_service.dart';
 import '../controllers/marketplace_controller.dart';
 import '../models/product_model.dart';
 
@@ -25,7 +29,11 @@ class _AddProductDialogState
   TextEditingController();
   final priceController = TextEditingController();
   final sellerController = TextEditingController();
-  final imageController = TextEditingController();
+
+  File? selectedImage;
+  bool isUploading = false;
+
+  String existingImageUrl = "";
 
   @override
   void initState() {
@@ -44,14 +52,39 @@ class _AddProductDialogState
       sellerController.text =
           widget.product!.seller;
 
-      imageController.text =
+      existingImageUrl =
           widget.product!.imageUrl;
     }
+  }
+
+  Future<void> pickImage() async {
+    final image =
+    await ImagePickerService.pickImage();
+
+    if (image == null) return;
+
+    setState(() {
+      selectedImage = image;
+    });
   }
 
   Future<void> saveProduct() async {
     if (!formKey.currentState!.validate()) {
       return;
+    }
+
+    setState(() {
+      isUploading = true;
+    });
+
+    String imageUrl = existingImageUrl;
+
+    if (selectedImage != null) {
+      imageUrl =
+      await StorageService.uploadImage(
+        selectedImage!,
+        "marketplace",
+      );
     }
 
     final product = ProductModel(
@@ -63,7 +96,7 @@ class _AddProductDialogState
         priceController.text.trim(),
       ),
       seller: sellerController.text.trim(),
-      imageUrl: imageController.text.trim(),
+      imageUrl: imageUrl,
       createdAt:
       widget.product?.createdAt ??
           DateTime.now(),
@@ -84,6 +117,10 @@ class _AddProductDialogState
     if (mounted) {
       Navigator.pop(context);
     }
+
+    setState(() {
+      isUploading = false;
+    });
   }
 
   @override
@@ -103,7 +140,8 @@ class _AddProductDialogState
               children: [
 
                 TextFormField(
-                  controller: titleController,
+                  controller:
+                  titleController,
                   decoration:
                   const InputDecoration(
                     labelText:
@@ -140,8 +178,7 @@ class _AddProductDialogState
                   TextInputType.number,
                   decoration:
                   const InputDecoration(
-                    labelText:
-                    "Price",
+                    labelText: "Price",
                   ),
                   validator: (value) {
                     if (value == null ||
@@ -171,17 +208,52 @@ class _AddProductDialogState
                   ),
                 ),
 
+                const SizedBox(height: 20),
+
+                if (selectedImage != null)
+                  ClipRRect(
+                    borderRadius:
+                    BorderRadius.circular(
+                        12),
+                    child: Image.file(
+                      selectedImage!,
+                      height: 180,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else if (existingImageUrl
+                    .isNotEmpty)
+                  ClipRRect(
+                    borderRadius:
+                    BorderRadius.circular(
+                        12),
+                    child: Image.network(
+                      existingImageUrl,
+                      height: 180,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
                 const SizedBox(height: 15),
 
-                TextFormField(
-                  controller:
-                  imageController,
-                  decoration:
-                  const InputDecoration(
-                    labelText:
-                    "Image URL",
-                  ),
+                OutlinedButton.icon(
+                  onPressed: pickImage,
+                  icon:
+                  const Icon(Icons.photo),
+                  label:
+                  const Text("Choose Image"),
                 ),
+
+                if (isUploading)
+                  const Padding(
+                    padding:
+                    EdgeInsets.only(
+                        top: 15),
+                    child:
+                    CircularProgressIndicator(),
+                  ),
               ],
             ),
           ),
@@ -197,7 +269,8 @@ class _AddProductDialogState
         ),
 
         ElevatedButton(
-          onPressed: saveProduct,
+          onPressed:
+          isUploading ? null : saveProduct,
           child: Text(
             widget.product == null
                 ? "Save"

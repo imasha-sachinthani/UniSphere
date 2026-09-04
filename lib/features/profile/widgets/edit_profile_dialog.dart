@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/image_picker_service.dart';
+import '../../../../core/services/storage_service.dart';
 import '../controllers/profile_controller.dart';
 import '../models/user_profile_model.dart';
 
@@ -18,7 +22,6 @@ class EditProfileDialog extends StatefulWidget {
 
 class _EditProfileDialogState
     extends State<EditProfileDialog> {
-
   final formKey = GlobalKey<FormState>();
 
   late TextEditingController nameController;
@@ -26,41 +29,78 @@ class _EditProfileDialogState
   late TextEditingController phoneController;
   late TextEditingController facultyController;
   late TextEditingController yearController;
-  late TextEditingController imageController;
+
+  File? selectedImage;
+
+  bool isUploading = false;
+
+  String existingImageUrl = "";
 
   @override
   void initState() {
     super.initState();
 
-    nameController =
-        TextEditingController(
-            text: widget.profile.fullName);
+    nameController = TextEditingController(
+      text: widget.profile.fullName,
+    );
 
-    emailController =
-        TextEditingController(
-            text: widget.profile.email);
+    emailController = TextEditingController(
+      text: widget.profile.email,
+    );
 
-    phoneController =
-        TextEditingController(
-            text: widget.profile.phone);
+    phoneController = TextEditingController(
+      text: widget.profile.phone,
+    );
 
-    facultyController =
-        TextEditingController(
-            text: widget.profile.faculty);
+    facultyController = TextEditingController(
+      text: widget.profile.faculty,
+    );
 
-    yearController =
-        TextEditingController(
-            text: widget.profile.year);
+    yearController = TextEditingController(
+      text: widget.profile.year,
+    );
 
-    imageController =
-        TextEditingController(
-            text: widget.profile.imageUrl);
+    existingImageUrl = widget.profile.imageUrl;
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    facultyController.dispose();
+    yearController.dispose();
+    super.dispose();
+  }
+
+  Future<void> pickImage() async {
+    final image =
+    await ImagePickerService.pickImage();
+
+    if (image == null) return;
+
+    setState(() {
+      selectedImage = image;
+    });
   }
 
   Future<void> save() async {
-
     if (!formKey.currentState!.validate()) {
       return;
+    }
+
+    setState(() {
+      isUploading = true;
+    });
+
+    String imageUrl = existingImageUrl;
+
+    if (selectedImage != null) {
+      imageUrl =
+      await StorageService.uploadImage(
+        selectedImage!,
+        "profile",
+      );
     }
 
     final profile = UserProfileModel(
@@ -70,21 +110,19 @@ class _EditProfileDialogState
       phone: phoneController.text.trim(),
       faculty: facultyController.text.trim(),
       year: yearController.text.trim(),
-      imageUrl: imageController.text.trim(),
+      imageUrl: imageUrl,
     );
 
     await ProfileController.saveProfile(profile);
 
-    if (mounted) {
-      Navigator.pop(context);
-    }
+    if (!mounted) return;
+
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return AlertDialog(
-
       title: const Text("Edit Profile"),
 
       content: SizedBox(
@@ -94,32 +132,91 @@ class _EditProfileDialogState
           key: formKey,
 
           child: SingleChildScrollView(
-
             child: Column(
-
               children: [
+
+                if (selectedImage != null)
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                    FileImage(selectedImage!),
+                  )
+                else if (existingImageUrl.isNotEmpty)
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                    NetworkImage(
+                      existingImageUrl,
+                    ),
+                  )
+                else
+                  const CircleAvatar(
+                    radius: 60,
+                    child: Icon(
+                      Icons.person,
+                      size: 50,
+                    ),
+                  ),
+
+                const SizedBox(height: 15),
+
+                OutlinedButton.icon(
+                  onPressed:
+                  isUploading ? null : pickImage,
+                  icon: const Icon(Icons.photo),
+                  label: const Text(
+                    "Choose Profile Photo",
+                  ),
+                ),
+
+                if (isUploading)
+                  const Padding(
+                    padding:
+                    EdgeInsets.only(top: 15),
+                    child:
+                    CircularProgressIndicator(),
+                  ),
+
+                const SizedBox(height: 20),
 
                 TextFormField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration:
+                  const InputDecoration(
                     labelText: "Full Name",
                   ),
+                  validator: (value) =>
+                  value == null ||
+                      value.trim().isEmpty
+                      ? "Required"
+                      : null,
                 ),
 
                 const SizedBox(height: 15),
 
                 TextFormField(
                   controller: emailController,
-                  decoration: const InputDecoration(
+                  keyboardType:
+                  TextInputType.emailAddress,
+                  decoration:
+                  const InputDecoration(
                     labelText: "Email",
                   ),
+                  validator: (value) =>
+                  value == null ||
+                      value.trim().isEmpty
+                      ? "Required"
+                      : null,
                 ),
 
                 const SizedBox(height: 15),
 
                 TextFormField(
                   controller: phoneController,
-                  decoration: const InputDecoration(
+                  keyboardType:
+                  TextInputType.phone,
+                  decoration:
+                  const InputDecoration(
                     labelText: "Phone",
                   ),
                 ),
@@ -127,8 +224,10 @@ class _EditProfileDialogState
                 const SizedBox(height: 15),
 
                 TextFormField(
-                  controller: facultyController,
-                  decoration: const InputDecoration(
+                  controller:
+                  facultyController,
+                  decoration:
+                  const InputDecoration(
                     labelText: "Faculty",
                   ),
                 ),
@@ -137,20 +236,12 @@ class _EditProfileDialogState
 
                 TextFormField(
                   controller: yearController,
-                  decoration: const InputDecoration(
-                    labelText: "Academic Year",
+                  decoration:
+                  const InputDecoration(
+                    labelText:
+                    "Academic Year",
                   ),
                 ),
-
-                const SizedBox(height: 15),
-
-                TextFormField(
-                  controller: imageController,
-                  decoration: const InputDecoration(
-                    labelText: "Profile Image URL",
-                  ),
-                ),
-
               ],
             ),
           ),
@@ -160,17 +251,23 @@ class _EditProfileDialogState
       actions: [
 
         TextButton(
-          onPressed: () {
+          onPressed: isUploading
+              ? null
+              : () {
             Navigator.pop(context);
           },
           child: const Text("Cancel"),
         ),
 
         ElevatedButton(
-          onPressed: save,
-          child: const Text("Save"),
+          onPressed:
+          isUploading ? null : save,
+          child: Text(
+            isUploading
+                ? "Uploading..."
+                : "Save",
+          ),
         ),
-
       ],
     );
   }

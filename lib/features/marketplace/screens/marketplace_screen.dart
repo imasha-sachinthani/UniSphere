@@ -15,173 +15,256 @@ class MarketplaceScreen extends StatefulWidget {
 
 class _MarketplaceScreenState
     extends State<MarketplaceScreen> {
+  final TextEditingController searchController =
+  TextEditingController();
+
+  String searchText = "";
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Marketplace"),
         centerTitle: true,
       ),
 
-      body: StreamBuilder<List<ProductModel>>(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                16, 16, 16, 8),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: "Search products...",
+                prefixIcon:
+                const Icon(Icons.search),
+                suffixIcon:
+                searchText.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(
+                      Icons.clear),
+                  onPressed: () {
+                    searchController
+                        .clear();
 
-        stream:
-        MarketplaceController.getProducts(),
-
-        builder: (context, snapshot) {
-
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (snapshot.hasError) {
-
-            return Center(
-              child: Text(
-                snapshot.error.toString(),
+                    setState(() {
+                      searchText = "";
+                    });
+                  },
+                )
+                    : null,
+                border:
+                OutlineInputBorder(
+                  borderRadius:
+                  BorderRadius.circular(
+                      12),
+                ),
               ),
-            );
-          }
+              onChanged: (value) {
+                setState(() {
+                  searchText =
+                      value.toLowerCase();
+                });
+              },
+            ),
+          ),
 
-          if (!snapshot.hasData ||
-              snapshot.data!.isEmpty) {
+          Expanded(
+            child: StreamBuilder<
+                List<ProductModel>>(
+              stream: MarketplaceController
+                  .getProducts(),
 
-            return const Center(
-              child: Column(
-                mainAxisAlignment:
-                MainAxisAlignment.center,
-                children: [
-
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 80,
-                    color: Colors.grey,
-                  ),
-
-                  SizedBox(height: 20),
-
-                  Text(
-                    "No Products Available",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  SizedBox(height: 8),
-
-                  Text(
-                    "Tap + to add your first product.",
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final products = snapshot.data!;
-
-          return ListView.builder(
-
-            padding:
-            const EdgeInsets.all(16),
-
-            itemCount: products.length,
-
-            itemBuilder: (context, index) {
-
-              final product = products[index];
-
-              return ProductCard(
-
-                product: product,
-
-                onEdit: () {
-
-                  showDialog(
-                    context: context,
-                    builder: (_) =>
-                        AddProductDialog(
-                          product: product,
-                        ),
+              builder:
+                  (context, snapshot) {
+                if (snapshot
+                    .connectionState ==
+                    ConnectionState
+                        .waiting) {
+                  return const Center(
+                    child:
+                    CircularProgressIndicator(),
                   );
-                },
+                }
 
-                onDelete: () async {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      snapshot.error
+                          .toString(),
+                    ),
+                  );
+                }
 
-                  final confirm =
-                  await showDialog<bool>(
+                if (!snapshot.hasData) {
+                  return const SizedBox();
+                }
 
-                    context: context,
+                List<ProductModel>
+                products =
+                snapshot.data!;
 
-                    builder: (_) => AlertDialog(
+                if (searchText
+                    .isNotEmpty) {
+                  products = products
+                      .where((product) {
+                    return product.title
+                        .toLowerCase()
+                        .contains(
+                        searchText) ||
+                        product.description
+                            .toLowerCase()
+                            .contains(
+                            searchText) ||
+                        product.seller
+                            .toLowerCase()
+                            .contains(
+                            searchText);
+                  }).toList();
+                }
 
-                      title:
-                      const Text("Delete"),
-
-                      content: const Text(
-                        "Delete this product?",
-                      ),
-
-                      actions: [
-
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(
-                                context,
-                                false);
-                          },
-                          child:
-                          const Text("Cancel"),
+                if (products.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment:
+                      MainAxisAlignment
+                          .center,
+                      children: [
+                        Icon(
+                          Icons
+                              .shopping_bag_outlined,
+                          size: 80,
+                          color: Colors
+                              .grey,
                         ),
-
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(
-                                context,
-                                true);
-                          },
-                          child:
-                          const Text("Delete"),
+                        SizedBox(
+                            height: 20),
+                        Text(
+                          "No Products Found",
+                          style:
+                          TextStyle(
+                            fontSize:
+                            22,
+                            fontWeight:
+                            FontWeight
+                                .bold,
+                          ),
                         ),
                       ],
                     ),
                   );
+                }
 
-                  if (confirm == true) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    setState(() {});
+                  },
+                  child:
+                  ListView.builder(
+                    padding:
+                    const EdgeInsets
+                        .all(16),
+                    itemCount:
+                    products.length,
+                    itemBuilder:
+                        (context,
+                        index) {
+                      final product =
+                      products[
+                      index];
 
-                    await MarketplaceController
-                        .deleteProduct(
-                      product.id,
-                    );
-                  }
-                },
-              );
-            },
-          );
-        },
+                      return ProductCard(
+                        product:
+                        product,
+
+                        onEdit: () {
+                          showDialog(
+                            context:
+                            context,
+                            builder:
+                                (_) =>
+                                AddProductDialog(
+                                  product:
+                                  product,
+                                ),
+                          );
+                        },
+
+                        onDelete:
+                            () async {
+                          final confirm =
+                          await showDialog<
+                              bool>(
+                            context:
+                            context,
+                            builder:
+                                (_) =>
+                                AlertDialog(
+                                  title:
+                                  const Text(
+                                      "Delete Product"),
+                                  content:
+                                  const Text(
+                                      "Are you sure you want to delete this product?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () {
+                                        Navigator.pop(
+                                            context,
+                                            false);
+                                      },
+                                      child:
+                                      const Text(
+                                          "Cancel"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () {
+                                        Navigator.pop(
+                                            context,
+                                            true);
+                                      },
+                                      child:
+                                      const Text(
+                                          "Delete"),
+                                    ),
+                                  ],
+                                ),
+                          );
+
+                          if (confirm ==
+                              true) {
+                            await MarketplaceController
+                                .deleteProduct(
+                              product.id,
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton:
-      FloatingActionButton(
-
-        child: const Icon(Icons.add),
-
+      FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text("Add"),
         onPressed: () {
-
           showDialog(
-
             context: context,
-
             builder: (_) =>
             const AddProductDialog(),
           );
