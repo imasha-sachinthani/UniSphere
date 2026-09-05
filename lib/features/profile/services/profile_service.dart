@@ -5,7 +5,7 @@ import '../models/user_profile_model.dart';
 class ProfileService {
 
   static final collection =
-  FirebaseFirestore.instance.collection("users");
+  FirebaseFirestore.instance.collection("profiles");
 
   static Stream<UserProfileModel?> getProfile(
       String uid) {

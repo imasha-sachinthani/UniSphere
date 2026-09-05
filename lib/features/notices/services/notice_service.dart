@@ -3,30 +3,119 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/notice_model.dart';
 
 class NoticeService {
-  static final collection =
-  FirebaseFirestore.instance.collection("notices");
 
-  static Stream<List<NoticeModel>> getNotices() {
-    return collection.snapshots().map(
+  static final CollectionReference collection =
+  FirebaseFirestore.instance.collection(
+    "notices",
+  );
+
+  /// =====================================
+  /// GET ALL NOTICES
+  /// =====================================
+
+  static Stream<List<NoticeModel>>
+  getNotices() {
+
+    return collection
+
+        .orderBy(
+      "pinned",
+      descending: true,
+    )
+
+        .orderBy(
+      "createdAt",
+      descending: true,
+    )
+
+        .snapshots()
+
+        .map(
+
           (snapshot) => snapshot.docs
-          .map((doc) => NoticeModel.fromFirestore(doc))
+
+          .map(
+            (doc) =>
+            NoticeModel.fromFirestore(
+              doc,
+            ),
+      )
+
           .toList(),
     );
   }
 
-  static Future<void> addNotice(
-      NoticeModel notice) async {
-    await collection.add(notice.toMap());
+  /// =====================================
+  /// GET PINNED NOTICES
+  /// =====================================
+
+  static Stream<List<NoticeModel>>
+  getPinnedNotices() {
+
+    return collection
+
+        .where(
+      "pinned",
+      isEqualTo: true,
+    )
+
+        .orderBy(
+      "createdAt",
+      descending: true,
+    )
+
+        .snapshots()
+
+        .map(
+
+          (snapshot) => snapshot.docs
+
+          .map(
+            (doc) =>
+            NoticeModel.fromFirestore(
+              doc,
+            ),
+      )
+
+          .toList(),
+    );
   }
 
-  static Future<void> updateNotice(
-      String id,
-      NoticeModel notice) async {
-    await collection.doc(id).update(notice.toMap());
-  }
+  /// =====================================
+  /// GET LATEST NOTICES
+  /// Dashboard Widget
+  /// =====================================
 
-  static Future<void> deleteNotice(
-      String id) async {
-    await collection.doc(id).delete();
+  static Stream<List<NoticeModel>>
+  getLatestNotices({
+
+    int limit = 5,
+
+  }) {
+
+    return collection
+
+        .orderBy(
+      "createdAt",
+      descending: true,
+    )
+
+        .limit(limit)
+
+        .snapshots()
+
+        .map(
+
+          (snapshot) => snapshot.docs
+
+          .map(
+            (doc) =>
+            NoticeModel.fromFirestore(
+              doc,
+            ),
+      )
+
+          .toList(),
+    );
   }
 }

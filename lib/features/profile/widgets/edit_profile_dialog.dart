@@ -27,14 +27,31 @@ class _EditProfileDialogState
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
-  late TextEditingController facultyController;
-  late TextEditingController yearController;
 
   File? selectedImage;
 
   bool isUploading = false;
 
   String existingImageUrl = "";
+
+  String? selectedFaculty;
+  String? selectedYear;
+
+  final List<String> faculties = [
+    "Computing",
+    "Business",
+    "Engineering",
+    "Science",
+    "Design",
+    "Law",
+  ];
+
+  final List<String> years = [
+    "Year 1",
+    "Year 2",
+    "Year 3",
+    "Year 4",
+  ];
 
   @override
   void initState() {
@@ -52,13 +69,13 @@ class _EditProfileDialogState
       text: widget.profile.phone,
     );
 
-    facultyController = TextEditingController(
-      text: widget.profile.faculty,
-    );
+    selectedFaculty = widget.profile.faculty.isEmpty
+        ? null
+        : widget.profile.faculty;
 
-    yearController = TextEditingController(
-      text: widget.profile.year,
-    );
+    selectedYear = widget.profile.year.isEmpty
+        ? null
+        : widget.profile.year;
 
     existingImageUrl = widget.profile.imageUrl;
   }
@@ -68,8 +85,6 @@ class _EditProfileDialogState
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-    facultyController.dispose();
-    yearController.dispose();
     super.dispose();
   }
 
@@ -108,8 +123,8 @@ class _EditProfileDialogState
       fullName: nameController.text.trim(),
       email: emailController.text.trim(),
       phone: phoneController.text.trim(),
-      faculty: facultyController.text.trim(),
-      year: yearController.text.trim(),
+      faculty: selectedFaculty ?? "",
+      year: selectedYear ?? "",
       imageUrl: imageUrl,
     );
 
@@ -127,10 +142,8 @@ class _EditProfileDialogState
 
       content: SizedBox(
         width: 430,
-
         child: Form(
           key: formKey,
-
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -145,9 +158,7 @@ class _EditProfileDialogState
                   CircleAvatar(
                     radius: 60,
                     backgroundImage:
-                    NetworkImage(
-                      existingImageUrl,
-                    ),
+                    NetworkImage(existingImageUrl),
                   )
                 else
                   const CircleAvatar(
@@ -171,76 +182,106 @@ class _EditProfileDialogState
 
                 if (isUploading)
                   const Padding(
-                    padding:
-                    EdgeInsets.only(top: 15),
+                    padding: EdgeInsets.only(top: 15),
                     child:
                     CircularProgressIndicator(),
                   ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
 
                 TextFormField(
                   controller: nameController,
-                  decoration:
-                  const InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Full Name",
+                    prefixIcon: Icon(Icons.person),
                   ),
-                  validator: (value) =>
-                  value == null ||
-                      value.trim().isEmpty
-                      ? "Required"
-                      : null,
+                  validator: (value) {
+                    if (value == null ||
+                        value.trim().isEmpty) {
+                      return "Full Name is required";
+                    }
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 15),
 
                 TextFormField(
                   controller: emailController,
-                  keyboardType:
-                  TextInputType.emailAddress,
-                  decoration:
-                  const InputDecoration(
+                  readOnly: true,
+                  decoration: const InputDecoration(
                     labelText: "Email",
+                    prefixIcon: Icon(Icons.email),
                   ),
-                  validator: (value) =>
-                  value == null ||
-                      value.trim().isEmpty
-                      ? "Required"
-                      : null,
                 ),
 
                 const SizedBox(height: 15),
 
                 TextFormField(
                   controller: phoneController,
-                  keyboardType:
-                  TextInputType.phone,
-                  decoration:
-                  const InputDecoration(
-                    labelText: "Phone",
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: "Phone Number",
+                    prefixIcon: Icon(Icons.phone),
                   ),
+                  validator: (value) {
+                    if (value != null &&
+                        value.isNotEmpty &&
+                        value.length < 10) {
+                      return "Invalid phone number";
+                    }
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 15),
 
-                TextFormField(
-                  controller:
-                  facultyController,
-                  decoration:
-                  const InputDecoration(
+                DropdownButtonFormField<String>(
+                  value: selectedFaculty,
+                  decoration: const InputDecoration(
                     labelText: "Faculty",
+                    prefixIcon: Icon(Icons.school),
                   ),
+                  items: faculties
+                      .map(
+                        (faculty) =>
+                        DropdownMenuItem(
+                          value: faculty,
+                          child: Text(faculty),
+                        ),
+                  )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedFaculty = value;
+                    });
+                  },
                 ),
 
                 const SizedBox(height: 15),
 
-                TextFormField(
-                  controller: yearController,
-                  decoration:
-                  const InputDecoration(
+                DropdownButtonFormField<String>(
+                  value: selectedYear,
+                  decoration: const InputDecoration(
                     labelText:
                     "Academic Year",
+                    prefixIcon:
+                    Icon(Icons.calendar_today),
                   ),
+                  items: years
+                      .map(
+                        (year) =>
+                        DropdownMenuItem(
+                          value: year,
+                          child: Text(year),
+                        ),
+                  )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedYear = value;
+                    });
+                  },
                 ),
               ],
             ),
@@ -259,12 +300,13 @@ class _EditProfileDialogState
           child: const Text("Cancel"),
         ),
 
-        ElevatedButton(
+        ElevatedButton.icon(
           onPressed:
           isUploading ? null : save,
-          child: Text(
+          icon: const Icon(Icons.save),
+          label: Text(
             isUploading
-                ? "Uploading..."
+                ? "Saving..."
                 : "Save",
           ),
         ),

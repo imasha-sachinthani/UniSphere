@@ -1,50 +1,97 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
+import '../../profile/screens/profile_screen.dart';
 
 class WelcomeHeader extends StatelessWidget {
   const WelcomeHeader({super.key});
 
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getProfile() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    return FirebaseFirestore.instance
+        .collection("profiles")
+        .doc(user!.uid)
+        .snapshots();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 28,
-          backgroundColor: Colors.blue.shade100,
-          child: const Icon(
-            Icons.person,
-            size: 30,
-            color: Colors.blue,
-          ),
-        ),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: getProfile(),
+      builder: (context, snapshot) {
+        String fullName = "Student";
+        String imageUrl = "";
 
-        const SizedBox(width: 15),
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data();
 
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Good Morning 👋",
-                style: AppTextStyles.body,
+          if (data != null) {
+            fullName = data["fullName"] ?? "Student";
+            imageUrl = data["imageUrl"] ?? "";
+          }
+        }
+
+        return Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProfileScreen(),
+                  ),
+                );
+              },
+              child: CircleAvatar(
+                radius: 28,
+                backgroundColor: Colors.blue.shade100,
+                backgroundImage:
+                imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+                child: imageUrl.isEmpty
+                    ? const Icon(
+                  Icons.person,
+                  size: 30,
+                  color: Colors.blue,
+                )
+                    : null,
               ),
+            ),
 
-              const SizedBox(height: 4),
+            const SizedBox(width: 15),
 
-              Text(
-                "Imasha",
-                style: AppTextStyles.heading,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Good Morning 👋",
+                    style: AppTextStyles.body,
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    fullName,
+                    style: AppTextStyles.heading,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
 
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_none_rounded),
-        )
-      ],
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.notifications_none_rounded,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

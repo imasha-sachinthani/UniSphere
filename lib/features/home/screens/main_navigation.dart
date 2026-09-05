@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../../assignments/screens/assignment_screen.dart';
 import '../../lost_found/screens/lost_found_screen.dart';
 import '../../marketplace/screens/marketplace_screen.dart';
-import '../../notices/screens/notice_screen.dart';
-import '../../profile/screens/profile_screen.dart';
+import '../../notices/screens/notices_screen.dart';
 import '../../timetable/screens/timetable_screen.dart';
 import 'home_screen.dart';
 
@@ -18,14 +17,20 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
 
-  final List<Widget> pages = [
-    const HomeScreen(),
-    const TimetableScreen(),
-    const AssignmentScreen(),
-    const NoticeScreen(),
-    const MarketplaceScreen(),
-    const LostFoundScreen(),
-    const ProfileScreen(),
+  final List<Widget> pages = const [
+
+    HomeScreen(),
+
+    TimetableScreen(),
+
+    AssignmentScreen(),
+
+    NoticesScreen(),
+
+    MarketplaceScreen(),
+
+    LostFoundScreen(),
+
   ];
 
   @override
@@ -37,6 +42,9 @@ class _MainNavigationState extends State<MainNavigation> {
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
 
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+
         onTap: (index) {
           setState(() {
             currentIndex = index;
@@ -44,34 +52,35 @@ class _MainNavigationState extends State<MainNavigation> {
         },
 
         items: const [
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_rounded),
             label: "Home",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
+            icon: Icon(Icons.calendar_month_rounded),
             label: "Time",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
+            icon: Icon(Icons.assignment_rounded),
             label: "Tasks",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.campaign),
+            icon: Icon(Icons.campaign_rounded),
             label: "News",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Lost",
+            icon: Icon(Icons.storefront_rounded),
+            label: "Market",
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
+            icon: Icon(Icons.search_rounded),
+            label: "Lost",
           ),
         ],
       ),

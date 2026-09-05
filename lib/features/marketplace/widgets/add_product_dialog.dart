@@ -1,9 +1,7 @@
-import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/services/image_picker_service.dart';
-import '../../../../core/services/storage_service.dart';
 import '../controllers/marketplace_controller.dart';
 import '../models/product_model.dart';
 
@@ -22,18 +20,43 @@ class AddProductDialog extends StatefulWidget {
 
 class _AddProductDialogState
     extends State<AddProductDialog> {
+
   final formKey = GlobalKey<FormState>();
 
-  final titleController = TextEditingController();
+  final titleController =
+  TextEditingController();
+
   final descriptionController =
   TextEditingController();
-  final priceController = TextEditingController();
-  final sellerController = TextEditingController();
 
-  File? selectedImage;
-  bool isUploading = false;
+  final priceController =
+  TextEditingController();
 
-  String existingImageUrl = "";
+  final phoneController =
+  TextEditingController();
+
+  bool isSaving = false;
+
+  String sellerName = "";
+  String sellerEmail = "";
+  String uid = "";
+
+  String? selectedCategory;
+  String? selectedCondition;
+
+  final List<String> categories = [
+    "Books",
+    "Electronics",
+    "Furniture",
+    "Clothing",
+    "Accessories",
+    "Other",
+  ];
+
+  final List<String> conditions = [
+    "New",
+    "Used",
+  ];
 
   @override
   void initState() {
@@ -47,66 +70,125 @@ class _AddProductDialogState
           widget.product!.description;
 
       priceController.text =
-          widget.product!.price.toString();
+          widget.product!.price
+              .toString();
 
-      sellerController.text =
-          widget.product!.seller;
+      phoneController.text =
+          widget.product!.phone;
 
-      existingImageUrl =
-          widget.product!.imageUrl;
+      selectedCategory =
+          widget.product!.category;
+
+      selectedCondition =
+          widget.product!.condition;
+    }
+
+    loadCurrentUser();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loadCurrentUser() async {
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    uid = user.uid;
+
+    final doc =
+    await FirebaseFirestore.instance
+        .collection("profiles")
+        .doc(uid)
+        .get();
+
+    if (!doc.exists) return;
+
+    final data = doc.data()!;
+
+    sellerName =
+        data["fullName"] ?? "";
+
+    sellerEmail =
+        data["email"] ?? "";
+
+    if (widget.product == null) {
+      phoneController.text =
+          data["phone"] ?? "";
+    }
+
+    if (mounted) {
+      setState(() {});
     }
   }
 
-  Future<void> pickImage() async {
-    final image =
-    await ImagePickerService.pickImage();
-
-    if (image == null) return;
-
-    setState(() {
-      selectedImage = image;
-    });
-  }
-
   Future<void> saveProduct() async {
-    if (!formKey.currentState!.validate()) {
+    if (!formKey.currentState!
+        .validate()) {
       return;
     }
 
     setState(() {
-      isUploading = true;
+      isSaving = true;
     });
-
-    String imageUrl = existingImageUrl;
-
-    if (selectedImage != null) {
-      imageUrl =
-      await StorageService.uploadImage(
-        selectedImage!,
-        "marketplace",
-      );
-    }
 
     final product = ProductModel(
       id: widget.product?.id ?? "",
-      title: titleController.text.trim(),
+
+      uid: uid,
+
+      title: titleController.text
+          .trim(),
+
       description:
-      descriptionController.text.trim(),
+      descriptionController.text
+          .trim(),
+
       price: double.parse(
         priceController.text.trim(),
       ),
-      seller: sellerController.text.trim(),
-      imageUrl: imageUrl,
+      category:
+      selectedCategory ??
+          "Other",
+
+      condition:
+      selectedCondition ??
+          "Used",
+
+      sellerName: sellerName,
+
+      sellerEmail: sellerEmail,
+
+      phone: phoneController.text
+          .trim(),
+
+      imageUrl:
+      widget.product?.imageUrl ??
+          "",
+
+      isSold:
+      widget.product?.isSold ??
+          false,
+
       createdAt:
       widget.product?.createdAt ??
           DateTime.now(),
     );
 
     if (widget.product == null) {
-      await MarketplaceController.addProduct(
-        product,
-      );
+
+      await MarketplaceController
+          .addProduct(product);
+
     } else {
+
       await MarketplaceController
           .updateProduct(
         widget.product!.id,
@@ -114,167 +196,343 @@ class _AddProductDialogState
       );
     }
 
-    if (mounted) {
-      Navigator.pop(context);
-    }
+    if (!mounted) return;
 
-    setState(() {
-      isUploading = false;
-    });
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        widget.product == null
-            ? "Add Product"
-            : "Edit Product",
-      ),
-      content: SizedBox(
-        width: 430,
-        child: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-
-                TextFormField(
-                  controller:
-                  titleController,
-                  decoration:
-                  const InputDecoration(
-                    labelText:
-                    "Product Name",
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
-                      return "Required";
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 15),
-
-                TextFormField(
-                  controller:
-                  descriptionController,
-                  maxLines: 3,
-                  decoration:
-                  const InputDecoration(
-                    labelText:
-                    "Description",
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-
-                TextFormField(
-                  controller:
-                  priceController,
-                  keyboardType:
-                  TextInputType.number,
-                  decoration:
-                  const InputDecoration(
-                    labelText: "Price",
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty) {
-                      return "Required";
-                    }
-
-                    if (double.tryParse(
-                        value) ==
-                        null) {
-                      return "Invalid Price";
-                    }
-
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 15),
-
-                TextFormField(
-                  controller:
-                  sellerController,
-                  decoration:
-                  const InputDecoration(
-                    labelText:
-                    "Seller Name",
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                if (selectedImage != null)
-                  ClipRRect(
-                    borderRadius:
-                    BorderRadius.circular(
-                        12),
-                    child: Image.file(
-                      selectedImage!,
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else if (existingImageUrl
-                    .isNotEmpty)
-                  ClipRRect(
-                    borderRadius:
-                    BorderRadius.circular(
-                        12),
-                    child: Image.network(
-                      existingImageUrl,
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-
-                const SizedBox(height: 15),
-
-                OutlinedButton.icon(
-                  onPressed: pickImage,
-                  icon:
-                  const Icon(Icons.photo),
-                  label:
-                  const Text("Choose Image"),
-                ),
-
-                if (isUploading)
-                  const Padding(
-                    padding:
-                    EdgeInsets.only(
-                        top: 15),
-                    child:
-                    CircularProgressIndicator(),
-                  ),
-              ],
-            ),
-          ),
+        title: Text(
+          widget.product == null
+              ? "Add Product"
+              : "Edit Product",
         ),
-      ),
+
+        content: SizedBox(
+            width: 420,
+
+            child: Form(
+                key: formKey,
+
+                child: SingleChildScrollView(
+                    child: Column(
+                        children: [                TextFormField(
+                      controller: titleController,
+                      decoration:
+                      const InputDecoration(
+                        labelText:
+                        "Product Name",
+                        prefixIcon: Icon(
+                          Icons.shopping_bag,
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null ||
+                            value.trim().isEmpty) {
+                          return "Product name is required";
+                        }
+                        return null;
+                      },
+                    ),
+
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller:
+                    descriptionController,
+                    maxLines: 3,
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      "Description",
+                      prefixIcon: Icon(
+                        Icons.description,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller:
+                    priceController,
+                    keyboardType:
+                    TextInputType.number,
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      "Price (LKR)",
+                      prefixIcon: Icon(
+                        Icons.currency_rupee,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty) {
+                        return "Price is required";
+                      }
+
+                      if (double.tryParse(
+                          value) ==
+                          null) {
+                        return "Enter a valid price";
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  DropdownButtonFormField<
+                      String>(
+                    value:
+                    selectedCategory,
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      "Category",
+                      prefixIcon: Icon(
+                        Icons.category,
+                      ),
+                    ),
+                    items: categories
+                        .map(
+                          (category) =>
+                          DropdownMenuItem(
+                            value: category,
+                            child:
+                            Text(category),
+                          ),
+                    )
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCategory =
+                            value;
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 16),                DropdownButtonFormField<String>(
+                  value: selectedCondition,
+                  decoration: const InputDecoration(
+                    labelText: "Condition",
+                    prefixIcon: Icon(
+                      Icons.verified,
+                    ),
+                  ),
+                  items: conditions
+                      .map(
+                        (condition) =>
+                        DropdownMenuItem(
+                          value: condition,
+                          child:
+                          Text(condition),
+                        ),
+                  )
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCondition =
+                          value;
+                    });
+                  },
+                ),
+
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller:
+                    phoneController,
+                    keyboardType:
+                    TextInputType.phone,
+                    decoration:
+                    const InputDecoration(
+                      labelText:
+                      "Phone Number",
+                      prefixIcon: Icon(
+                        Icons.phone,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value != null &&
+                          value.isNotEmpty &&
+                          value.length < 10) {
+                        return "Invalid phone number";
+                      }
+
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Container(
+                    width: double.infinity,
+                    padding:
+                    const EdgeInsets.all(
+                      16,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                      Colors.grey.shade100,
+                      borderRadius:
+                      BorderRadius.circular(
+                        12,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+                      children: [
+
+                        const Text(
+                          "Seller Information",
+                          style: TextStyle(
+                            fontWeight:
+                            FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 12,
+                        ),
+
+                        Row(
+                          children: [
+
+                            CircleAvatar(
+                              backgroundColor:
+                              Colors.blue
+                                  .shade100,
+                              child: const Icon(
+                                Icons.person,
+                                color:
+                                Colors.blue,
+                              ),
+                            ),
+
+                            const SizedBox(
+                              width: 12,
+                            ),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment
+                                    .start,
+                                children: [
+
+                                  Text(
+                                    sellerName
+                                        .isEmpty
+                                        ? "Loading..."
+                                        : sellerName,
+                                    style:
+                                    const TextStyle(
+                                      fontWeight:
+                                      FontWeight
+                                          .bold,
+                                    ),
+                                  ),
+
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+
+                                  Text(
+                                    sellerEmail,
+                                    style:
+                                    TextStyle(
+                                      color: Colors
+                                          .grey
+                                          .shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  SwitchListTile(
+                    value: widget.product
+                        ?.isSold ??
+                        false,
+                    onChanged: null,
+                    title: const Text(
+                      "Sold",
+                    ),
+                    subtitle: const Text(
+                      "This option will be available after publishing.",
+                    ),
+                  ),
+                        ],
+                    ),
+                ),
+            ),
+        ),
+
       actions: [
 
         TextButton(
-          onPressed: () {
+          onPressed: isSaving
+              ? null
+              : () {
             Navigator.pop(context);
           },
-          child: const Text("Cancel"),
+          child: const Text(
+            "Cancel",
+          ),
         ),
 
-        ElevatedButton(
-          onPressed:
-          isUploading ? null : saveProduct,
-          child: Text(
-            widget.product == null
-                ? "Save"
-                : "Update",
+        ElevatedButton.icon(
+          onPressed: isSaving
+              ? null
+              : saveProduct,
+
+          icon: isSaving
+              ? const SizedBox(
+            width: 18,
+            height: 18,
+            child:
+            CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
+          )
+              : const Icon(
+            Icons.save,
+          ),
+
+          label: Text(
+            isSaving
+                ? "Saving..."
+                : widget.product == null
+                ? "Add Product"
+                : "Update Product",
+          ),
+
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+            Colors.blue,
+            foregroundColor:
+            Colors.white,
+            padding:
+            const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 12,
+            ),
           ),
         ),
       ],
