@@ -1,18 +1,75 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../services/dashboard_service.dart';
 
 class DashboardController {
-  static Stream<int> assignments() =>
-      DashboardService.assignmentCount();
 
-  static Stream<int> timetable() =>
-      DashboardService.timetableCount();
+  /// =========================
+  /// Next Class
+  /// =========================
 
-  static Stream<int> notices() =>
-      DashboardService.noticeCount();
+  static Stream<QueryDocumentSnapshot?>
+  nextClass() {
+    return DashboardService.getNextClass();
+  }
 
-  static Stream<int> marketplace() =>
-      DashboardService.marketplaceCount();
+  /// =========================
+  /// Upcoming Assignment
+  /// =========================
 
-  static Stream<int> lostFound() =>
-      DashboardService.lostFoundCount();
+  static Stream<QueryDocumentSnapshot?>
+  upcomingAssignment() {
+    return DashboardService.getUpcomingAssignment();
+  }
+
+  /// =========================
+  /// Latest Notice
+  /// =========================
+
+  static Stream<QueryDocumentSnapshot?>
+  latestNotice() {
+    return DashboardService.getLatestNotice();
+  }
+
+  /// =========================
+  /// Latest Marketplace Item
+  /// =========================
+
+  static Stream<QueryDocumentSnapshot?>
+  latestMarketplace() {
+    return DashboardService.getLatestMarketplace();
+  }
+
+  /// =========================
+  /// Latest Lost & Found
+  /// =========================
+
+  static Stream<QueryDocumentSnapshot?>
+  latestLostFound() {
+    return DashboardService.getLatestLostFound();
+  }
+
+  /// =========================
+  /// Dashboard Counts
+  /// =========================
+
+  static Stream<int> assignmentCount() {
+    return DashboardService.getAssignmentCount();
+  }
+
+  static Stream<int> noticeCount() {
+    return DashboardService.getNoticeCount();
+  }
+
+  static Stream<int> marketplaceCount() {
+    return DashboardService.getMarketplaceCount();
+  }
+
+  static Stream<int> lostFoundCount() {
+    return DashboardService.getLostFoundCount();
+  }
+
+  static Stream<int> timetableCount() {
+    return DashboardService.getTimetableCount();
+  }
 }
