@@ -12,233 +12,432 @@ class FeatureGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return GridView.count(
+
+      shrinkWrap: true,
+
+      physics:
+      const NeverScrollableScrollPhysics(),
+
+      crossAxisCount: 2,
+
+      crossAxisSpacing: 18,
+
+      mainAxisSpacing: 18,
+
+      childAspectRatio: 0.85 , padding: const EdgeInsets.all(10),
+
       children: [
-        const Text(
-          "Quick Actions",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+
+      _FeatureCard(
+
+      title: "Timetable",
+
+      subtitle: "Today's classes",
+
+      icon:
+      Icons.calendar_month_rounded,
+
+      color: Colors.blue,
+
+      onTap: () {
+
+        Navigator.push(
+
+          context,
+
+          MaterialPageRoute(
+
+            builder: (_) =>
+            const TimetableScreen(),
+
           ),
-        ),
 
-        const SizedBox(height: 16),
+        );
 
-        GridView(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.45,
-          ),
-          children: [
-            _QuickActionCard(
-              title: "Timetable",
-              subtitle: "Today's classes",
-              icon: Icons.calendar_month_rounded,
-              color: Colors.blue,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const TimetableScreen(),
-                  ),
-                );
-              },
-            ),
+      },
 
-            _QuickActionCard(
-              title: "Assignments",
-              subtitle: "Due tasks",
-              icon: Icons.assignment_rounded,
-              color: Colors.green,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    const AssignmentScreen(),
-                  ),
-                );
-              },
-            ),
+    ),
 
-            _QuickActionCard(
-              title: "Notices",
-              subtitle: "University updates",
-              icon: Icons.campaign_rounded,
-              color: Colors.orange,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    const NoticesScreen(),
-                  ),
-                );
-              },
-            ),
+    _FeatureCard(
 
-            _QuickActionCard(
-              title: "Marketplace",
-              subtitle: "Buy & Sell",
-              icon: Icons.storefront_rounded,
-              color: Colors.deepPurple,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    const MarketplaceScreen(),
-                  ),
-                );
-              },
-            ),
+    title: "Assignments",
 
-            _QuickActionCard(
-              title: "Lost & Found",
-              subtitle: "Missing items",
-              icon: Icons.search_rounded,
-              color: Colors.red,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    const LostFoundScreen(),
-                  ),
-                );
-              },
-            ),
+    subtitle: "Manage tasks",
 
-            _QuickActionCard(
-              title: "Profile",
-              subtitle: "Student profile",
-              icon: Icons.person_rounded,
-              color: Colors.teal,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    const ProfileScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ],
+    icon:
+    Icons.assignment_rounded,
+
+    color: Colors.green,
+
+    onTap: () {
+
+    Navigator.push(
+
+    context,
+
+    MaterialPageRoute(
+
+    builder: (_) =>
+    const AssignmentScreen(),
+
+    ),
+
     );
+
+    },
+
+    ),
+
+    _FeatureCard(
+
+    title: "Marketplace",
+
+    subtitle: "Buy & Sell",
+
+    icon:
+    Icons.storefront_rounded,
+
+    color: Colors.deepPurple,
+
+    onTap: () {
+
+    Navigator.push(
+
+    context,
+
+    MaterialPageRoute(
+
+    builder: (_) =>
+    const MarketplaceScreen(),
+
+    ),
+
+    );
+
+    },
+
+    ),
+
+    _FeatureCard(
+
+    title: "Lost & Found",
+
+    subtitle: "Missing items",
+
+    icon:
+    Icons.search_rounded,
+
+    color: Colors.red,
+
+    onTap: () {
+
+    Navigator.push(
+
+    context,
+
+    MaterialPageRoute(
+
+    builder: (_) =>
+    const LostFoundScreen(),
+
+    ),
+
+    );
+
+    },
+
+    ),        _FeatureCard(
+
+          title: "Notices",
+
+          subtitle: "Latest updates",
+
+          icon:
+          Icons.campaign_rounded,
+
+          color: Colors.orange,
+
+          onTap: () {
+
+            Navigator.push(
+
+              context,
+
+              MaterialPageRoute(
+
+                builder: (_) =>
+                const NoticesScreen(),
+
+              ),
+
+            );
+
+          },
+
+        ),
+
+        _FeatureCard(
+
+          title: "Profile",
+
+          subtitle: "Student account",
+
+          icon:
+          Icons.person_rounded,
+
+          color: Colors.teal,
+
+          onTap: () {
+
+            Navigator.push(
+
+              context,
+
+              MaterialPageRoute(
+
+                builder: (_) =>
+                const ProfileScreen(),
+
+              ),
+
+            );
+
+          },
+
+        ),
+
+      ],
+
+    );
+
   }
+
 }
 
-class _QuickActionCard extends StatelessWidget {
+class _FeatureCard extends StatelessWidget {
+
   final String title;
+
   final String subtitle;
+
   final IconData icon;
+
   final Color color;
+
   final VoidCallback onTap;
 
-  const _QuickActionCard({
+  const _FeatureCard({
+
     required this.title,
+
     required this.subtitle,
+
     required this.icon,
+
     required this.color,
+
     required this.onTap,
+
   });
 
   @override
   Widget build(BuildContext context) {
+
     return Material(
-      color: Colors.transparent,
 
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: onTap,
+        color: Colors.transparent,
 
-        child: Ink(
-          decoration: BoxDecoration(
-            color: Colors.white,
+        child: InkWell(
+
             borderRadius:
-            BorderRadius.circular(22),
-            border: Border.all(
-              color: Colors.grey.shade200,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: 0.04,
-                ),
-                blurRadius: 12,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
+            BorderRadius.circular(24),
 
-          child: Padding(
-            padding: const EdgeInsets.all(18),
+            onTap: onTap,
 
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+            splashColor:
+            color.withValues(alpha: 0.10),
 
-              mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
+            highlightColor:
+            Colors.transparent,
 
-              children: [
+            child: Ink(
 
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: color.withValues(
-                      alpha: 0.12,
-                    ),
-                    shape: BoxShape.circle,
+                decoration: BoxDecoration(
+
+                  color: Colors.white,
+
+                  borderRadius:
+                  BorderRadius.circular(24),
+
+                  border: Border.all(
+
+                    color: Colors.grey.shade200,
+
                   ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 26,
-                  ),
-                ),
 
-                Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
-                  children: [
+                  boxShadow: [
 
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight:
-                        FontWeight.bold,
-                        fontSize: 16,
+                    BoxShadow(
+
+                      color:
+                      Colors.black.withValues(
+                        alpha: 0.05,
                       ),
+
+                      blurRadius: 14,
+
+                      offset:
+                      const Offset(0, 6),
+
                     ),
 
-                    const SizedBox(height: 4),
-
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color:
-                        Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
-                    ),
                   ],
+
                 ),
-              ],
+
+                child: Padding(
+
+                    padding:
+                    const EdgeInsets.all(18),
+
+                    child: Column(
+
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
+
+                        mainAxisAlignment:
+                        MainAxisAlignment.start,
+
+                        children: [                Container(
+
+                          width: 52,
+
+                          height: 52,
+
+                          decoration: BoxDecoration(
+
+                            color: color.withValues(
+                              alpha: 0.12,
+                            ),
+
+                            borderRadius:
+                            BorderRadius.circular(16),
+
+                          ),
+
+                          child: Icon(
+
+                            icon,
+
+                            color: color,
+
+                            size: 28,
+
+                          ),
+
+                        ),
+
+                          const SizedBox(height: 8),
+
+                          Column(
+
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+                            children: [
+
+                              Text(
+
+                                title,
+
+                                style: const TextStyle(
+
+                                  fontSize: 17,
+
+                                  fontWeight:
+                                  FontWeight.bold,
+
+                                ),
+
+                              ),
+
+                              const SizedBox(
+                                height: 5,
+                              ),
+
+                              Text(
+
+                                subtitle,
+
+                                style: TextStyle(
+
+                                  fontSize: 13,
+
+                                  color:
+                                  Colors.grey.shade600,
+
+                                ),
+
+                              ),
+
+                              const SizedBox(
+                                height: 8,
+                              ),
+
+                              Row(
+
+                                children: [
+
+                                  Text(
+
+                                    "Open",
+
+                                    style: TextStyle(
+
+                                      color: color,
+
+                                      fontWeight:
+                                      FontWeight.bold,
+
+                                    ),
+
+                                  ),
+
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+
+                                  Icon(
+
+                                    Icons.arrow_forward_ios_rounded,
+
+                                    size: 14,
+
+                                    color: color,
+
+                                  ),
+
+                                ],
+
+                              ),
+
+                            ],
+
+                          ),
+
+                        ],
+
+                    ),
+
+                ),
+
             ),
-          ),
+
         ),
-      ),
+
     );
+
   }
+
 }
