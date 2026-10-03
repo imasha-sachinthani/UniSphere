@@ -11,6 +11,7 @@ class TimetableDetailsDialog extends StatelessWidget {
   });
 
   Widget buildRow(
+      BuildContext context,
       IconData icon,
       String title,
       String value,
@@ -21,26 +22,28 @@ class TimetableDetailsDialog extends StatelessWidget {
         children: [
           Icon(
             icon,
-            color: Colors.blue,
+            color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey,
+                    color: Theme.of(context).hintColor,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    color:
+                    Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
               ],
@@ -53,20 +56,23 @@ class TimetableDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
     return Dialog(
+      backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.calendar_month,
               size: 60,
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
             ),
 
             const SizedBox(height: 20),
@@ -74,49 +80,67 @@ class TimetableDetailsDialog extends StatelessWidget {
             Text(
               timetable.subject,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
 
             const SizedBox(height: 24),
 
             buildRow(
+              context,
               Icons.person,
               "Lecturer",
               timetable.lecturer,
             ),
 
             buildRow(
+              context,
               Icons.room,
               "Room",
               timetable.room,
             ),
 
             buildRow(
+              context,
               Icons.school,
               "Semester",
               timetable.semester,
             ),
 
             buildRow(
+              context,
               Icons.calendar_today,
               "Day",
               timetable.day,
             ),
 
             buildRow(
+              context,
               Icons.access_time,
               "Time",
               "${timetable.startTime} - ${timetable.endTime}",
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                  Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(14),
+                  ),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },

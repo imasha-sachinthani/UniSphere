@@ -17,11 +17,13 @@ class TimetableCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.05),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black.withValues(alpha: 0.35)
+                : Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -69,9 +71,10 @@ class TimetableCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           timetable.subject,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                         ),
                       ),
@@ -83,36 +86,18 @@ class TimetableCard extends StatelessWidget {
                   Row(
                     children: [
 
-                      const Icon(
+                      Icon(
                         Icons.access_time,
                         size: 18,
-                        color: Colors.grey,
+                        color: Theme.of(context).hintColor,
                       ),
 
                       const SizedBox(width: 8),
 
                       Text(
                         "${timetable.startTime} - ${timetable.endTime}",
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-
-                      const Icon(
-                        Icons.person,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      Expanded(
-                        child: Text(
-                          timetable.lecturer,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ],
@@ -123,10 +108,34 @@ class TimetableCard extends StatelessWidget {
                   Row(
                     children: [
 
-                      const Icon(
+                      Icon(
+                        Icons.person,
+                        size: 18,
+                        color: Theme.of(context).hintColor,
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      Expanded(
+                        child: Text(
+                          timetable.lecturer,
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+
+                      Icon(
                         Icons.location_on,
                         size: 18,
-                        color: Colors.grey,
+                        color: Theme.of(context).hintColor,
                       ),
 
                       const SizedBox(width: 8),
@@ -134,6 +143,9 @@ class TimetableCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           timetable.room,
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
                         ),
                       ),
                     ],
@@ -144,11 +156,20 @@ class TimetableCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Chip(
-                      avatar: const Icon(
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF2A2A2A)
+                          : Colors.grey.shade100,
+                      avatar: Icon(
                         Icons.calendar_today,
                         size: 16,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      label: Text(timetable.day),
+                      label: Text(
+                        timetable.day,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
+                      ),
                     ),
                   ),
                 ],

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_text_styles.dart';
 import '../../profile/screens/profile_screen.dart';
 
 class WelcomeHeader extends StatelessWidget {
@@ -47,7 +46,10 @@ class WelcomeHeader extends StatelessWidget {
               },
               child: CircleAvatar(
                 radius: 28,
-                backgroundColor: Colors.blue.shade100,
+                backgroundColor:
+                Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF1E1E1E)
+                    : Colors.blue.shade100,
                 backgroundImage:
                 imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
                 child: imageUrl.isEmpty
@@ -68,16 +70,28 @@ class WelcomeHeader extends StatelessWidget {
                 children: [
                   Text(
                     "Good Morning 👋",
-                    style: AppTextStyles.body,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                    ),
                   ),
 
                   const SizedBox(height: 4),
 
                   Text(
                     fullName,
-                    style: AppTextStyles.heading,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.color,
+                    ),
                   ),
                 ],
               ),
@@ -85,8 +99,9 @@ class WelcomeHeader extends StatelessWidget {
 
             IconButton(
               onPressed: () {},
-              icon: const Icon(
+              icon: Icon(
                 Icons.notifications_none_rounded,
+                color: Theme.of(context).iconTheme.color,
               ),
             ),
           ],

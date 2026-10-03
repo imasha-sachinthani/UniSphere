@@ -22,22 +22,28 @@ class SearchBox extends StatelessWidget {
           decoration: InputDecoration(
             hintText: "Search...",
 
-            prefixIcon: const Icon(
+            hintStyle: TextStyle(
+              color: Theme.of(context).hintColor,
+            ),
+
+            prefixIcon: Icon(
               Icons.search,
+              color: Theme.of(context).hintColor,
             ),
 
             filled: true,
-            fillColor: Colors.grey.shade100,
 
-            contentPadding:
-            const EdgeInsets.symmetric(
+            fillColor: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF1E1E1E)
+                : Colors.grey.shade100,
+
+            contentPadding: const EdgeInsets.symmetric(
               vertical: 0,
               horizontal: 20,
             ),
 
             border: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide.none,
             ),
           ),

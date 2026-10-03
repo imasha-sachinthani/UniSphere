@@ -76,11 +76,16 @@ class _TimetableScreenState
 
         decoration: InputDecoration(
 
+          filled: true,
+          fillColor: Theme.of(context).cardColor,
+
           hintText:
           "Search by subject, lecturer or room",
 
-          prefixIcon:
-          const Icon(Icons.search),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).hintColor,
+          ),
 
           suffixIcon:
           searchText.isNotEmpty
@@ -106,12 +111,24 @@ class _TimetableScreenState
 
               : null,
 
-          border:
-          OutlineInputBorder(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: Theme.of(context).dividerColor,
+            ),
+          ),
 
-            borderRadius:
-            BorderRadius.circular(
-              14,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: Theme.of(context).dividerColor,
+            ),
+          ),
+
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
@@ -130,19 +147,14 @@ class _TimetableScreenState
 
       const SizedBox(height: 18),
 
-      const Text(
-
-        "Semester",
-
-        style: TextStyle(
-
-          fontWeight:
-          FontWeight.bold,
-
-          fontSize: 16,
-
-        ),
-      ),
+          Text(
+            "Semester",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
 
       const SizedBox(height: 8),
 
@@ -164,11 +176,12 @@ class _TimetableScreenState
       ),
 
       const SizedBox(height: 18),
-          const Text(
+          Text(
             "Day",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
 
@@ -284,28 +297,28 @@ class _TimetableScreenState
     Icons
         .calendar_month_outlined,
     size: 90,
-    color: Colors.grey.shade400,
+      color: Theme.of(context).hintColor,
     ),
 
     const SizedBox(height: 20),
 
-    const Text(
-    "No Classes Found",
-    style: TextStyle(
-    fontSize: 22,
-    fontWeight:
-    FontWeight.bold,
-    ),
-    ),
+      Text(
+        "No Classes Found",
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
+      ),
 
     const SizedBox(height: 8),
 
-    const Text(
+    Text(
     "Try changing the semester or day filter.",
     textAlign:
     TextAlign.center,
     style: TextStyle(
-    color: Colors.grey,
+      color: Theme.of(context).hintColor,
     ),
     ),
     ],

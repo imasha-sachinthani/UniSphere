@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-        backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
         body: SafeArea(
             child: RefreshIndicator(
@@ -86,7 +86,9 @@ class HomeScreen extends StatelessWidget {
                             Text(
                               "Everything you need today in one place.",
                               style: TextStyle(
-                                color: Colors.grey.shade600,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey.shade400
+                                    : Colors.grey.shade600,
                                 fontSize: 14,
                               ),
                             ),
@@ -99,15 +101,15 @@ class HomeScreen extends StatelessWidget {
                         height: 54,
 
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius:
                           BorderRadius.circular(18),
 
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(
-                                alpha: 0.05,
-                              ),
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.black.withValues(alpha: 0.35)
+                                  : Colors.black.withValues(alpha: 0.05),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),
@@ -222,32 +224,27 @@ class HomeScreen extends StatelessWidget {
                           borderRadius:
                           BorderRadius.circular(24),
 
-                          gradient:
-                          const LinearGradient(
-
+                          gradient: LinearGradient(
                             begin: Alignment.topLeft,
-
                             end: Alignment.bottomRight,
-
-                            colors: [
-
+                            colors: Theme.of(context).brightness == Brightness.dark
+                                ? const [
+                              Color(0xFF1E40AF),
+                              Color(0xFF1D4ED8),
+                            ]
+                                : const [
                               Color(0xFF2563EB),
-
                               Color(0xFF3B82F6),
-
                             ],
-
                           ),
 
                           boxShadow: [
 
                             BoxShadow(
 
-                              color: const Color(
-                                0xFF2563EB,
-                              ).withValues(
-                                alpha: 0.22,
-                              ),
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.black.withValues(alpha: 0.35)
+                                  : const Color(0xFF2563EB).withValues(alpha: 0.22),
 
                               blurRadius: 18,
 
@@ -279,10 +276,9 @@ class HomeScreen extends StatelessWidget {
 
                           decoration: BoxDecoration(
 
-                            color: Colors.white
-                                .withValues(
-                              alpha: 0.18,
-                            ),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withValues(alpha: 0.12)
+                                : Colors.white.withValues(alpha: 0.18),
 
                             borderRadius:
                             BorderRadius.circular(
@@ -388,9 +384,13 @@ class HomeScreen extends StatelessWidget {
 
                                   elevation: 0,
 
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                                      ? const Color(0xFF2A2A2A)
+                                      : Colors.white,
 
-                                  foregroundColor: const Color(0xFF2563EB),
+                                  foregroundColor: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : const Color(0xFF2563EB),
 
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 14,
@@ -415,7 +415,9 @@ class HomeScreen extends StatelessWidget {
 
                           style: TextStyle(
 
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
 
                             fontWeight: FontWeight.w600,
 
@@ -435,7 +437,9 @@ class HomeScreen extends StatelessWidget {
 
                           style: TextStyle(
 
-                            color: Colors.grey.shade500,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey.shade500
+                                : Colors.grey.shade600,
 
                             fontSize: 12,
 

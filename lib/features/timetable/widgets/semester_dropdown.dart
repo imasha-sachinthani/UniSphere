@@ -26,19 +26,65 @@ class SemesterDropdown extends StatelessWidget {
 
     return DropdownButtonFormField<String>(
       value: selectedSemester,
+
+      dropdownColor: Theme.of(context).cardColor,
+
+      iconEnabledColor: Theme.of(context).hintColor,
+
+      style: TextStyle(
+        color: Theme.of(context).textTheme.bodyLarge?.color,
+        fontSize: 16,
+      ),
+
       decoration: InputDecoration(
         labelText: "Semester",
-        prefixIcon: const Icon(Icons.school),
+
+        labelStyle: TextStyle(
+          color: Theme.of(context).hintColor,
+        ),
+
+        filled: true,
+        fillColor: Theme.of(context).cardColor,
+
+        prefixIcon: Icon(
+          Icons.school,
+          color: Theme.of(context).hintColor,
+        ),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).dividerColor,
+          ),
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).dividerColor,
+          ),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
+
       items: semesters.map((semester) {
-        return DropdownMenuItem(
+        return DropdownMenuItem<String>(
           value: semester,
-          child: Text(semester),
+          child: Text(
+            semester,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
         );
       }).toList(),
+
       onChanged: (value) {
         if (value != null) {
           onChanged(value);
