@@ -68,7 +68,7 @@ class FeatureGrid extends StatelessWidget {
     icon:
     Icons.assignment_rounded,
 
-    color: Colors.green,
+      color: Colors.green,
 
     onTap: () {
 
@@ -265,31 +265,23 @@ class _FeatureCard extends StatelessWidget {
 
                 decoration: BoxDecoration(
 
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
 
                   borderRadius:
                   BorderRadius.circular(24),
 
                   border: Border.all(
-
-                    color: Colors.grey.shade200,
-
+                    color: Theme.of(context).dividerColor,
                   ),
 
                   boxShadow: [
 
                     BoxShadow(
-
-                      color:
-                      Colors.black.withValues(
-                        alpha: 0.05,
-                      ),
-
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black.withValues(alpha: 0.35)
+                          : Colors.black.withValues(alpha: 0.05),
                       blurRadius: 14,
-
-                      offset:
-                      const Offset(0, 6),
-
+                      offset: const Offset(0, 6),
                     ),
 
                   ],
@@ -351,13 +343,10 @@ class _FeatureCard extends StatelessWidget {
 
                                 title,
 
-                                style: const TextStyle(
-
+                                style: TextStyle(
                                   fontSize: 17,
-
-                                  fontWeight:
-                                  FontWeight.bold,
-
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                 ),
 
                               ),
@@ -367,18 +356,13 @@ class _FeatureCard extends StatelessWidget {
                               ),
 
                               Text(
-
                                 subtitle,
-
                                 style: TextStyle(
-
                                   fontSize: 13,
-
-                                  color:
-                                  Colors.grey.shade600,
-
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey.shade400
+                                      : Colors.grey.shade600,
                                 ),
-
                               ),
 
                               const SizedBox(

@@ -153,31 +153,23 @@ class _DashboardCard extends StatelessWidget {
 
         decoration: BoxDecoration(
 
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
 
           borderRadius:
           BorderRadius.circular(22),
 
           border: Border.all(
-
-            color: Colors.grey.shade200,
-
+            color: Theme.of(context).dividerColor,
           ),
 
           boxShadow: [
 
             BoxShadow(
-
-              color:
-              Colors.black.withValues(
-                alpha: 0.04,
-              ),
-
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black.withValues(alpha: 0.35)
+                  : Colors.black.withValues(alpha: 0.04),
               blurRadius: 12,
-
-              offset:
-              const Offset(0, 5),
-
+              offset: const Offset(0, 5),
             ),
 
           ],
@@ -267,13 +259,10 @@ class _DashboardCard extends StatelessWidget {
 
                 title,
 
-                style: const TextStyle(
-
-                  fontWeight:
-                  FontWeight.w600,
-
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
                   fontSize: 15,
-
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
 
               ),
@@ -289,8 +278,7 @@ class _DashboardCard extends StatelessWidget {
                 borderRadius:
                 BorderRadius.circular(20),
 
-                backgroundColor:
-                Colors.grey.shade200,
+                backgroundColor: Theme.of(context).dividerColor,
 
                 valueColor:
                 AlwaysStoppedAnimation(
@@ -312,8 +300,9 @@ class _DashboardCard extends StatelessWidget {
 
                   style: TextStyle(
 
-                    color:
-                    Colors.grey.shade500,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade500,
 
                     fontSize: 11,
 
