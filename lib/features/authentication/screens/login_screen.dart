@@ -81,14 +81,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
               Text(
                 "Welcome Back",
-                style: AppTextStyles.heading,
+                style: AppTextStyles.heading.copyWith(
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
               ),
 
               const SizedBox(height: 8),
 
               Text(
                 "Login to continue",
-                style: AppTextStyles.body,
+                style: AppTextStyles.body.copyWith(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                ),
               ),
 
               const SizedBox(height: 40),
@@ -141,7 +145,12 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?"),
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
+                  ),
 
                   TextButton(
                     onPressed: () {

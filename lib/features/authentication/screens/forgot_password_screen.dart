@@ -34,25 +34,29 @@ class _ForgotPasswordScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.lock_reset,
                     size: 90,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-
                   const SizedBox(height: 24),
 
                   Text(
                     'Forgot Password',
-                    style: AppTextStyles.heading,
                     textAlign: TextAlign.center,
+                    style: AppTextStyles.heading.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                   ),
 
                   const SizedBox(height: 8),
 
                   Text(
                     'Enter your university email',
-                    style: AppTextStyles.body,
                     textAlign: TextAlign.center,
+                    style: AppTextStyles.body.copyWith(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
 
                   const SizedBox(height: 40),

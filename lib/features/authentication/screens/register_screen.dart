@@ -82,9 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.person_add_alt_1_rounded,
                     size: 90,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
 
                   const SizedBox(height: 24),
@@ -92,7 +93,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text(
                     "Create Account",
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.heading,
+                    style: AppTextStyles.heading.copyWith(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                   ),
 
                   const SizedBox(height: 8),
@@ -100,7 +103,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text(
                     "Create your UniSphere account",
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.body,
+                    style: AppTextStyles.body.copyWith(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
 
                   const SizedBox(height: 40),
