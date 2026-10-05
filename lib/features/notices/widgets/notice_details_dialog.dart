@@ -80,7 +80,12 @@ class NoticeDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Dialog(
+      backgroundColor: isDark
+          ? const Color(0xFF1E1E1E)
+          : Colors.white,
 
         shape: RoundedRectangleBorder(
           borderRadius:
@@ -108,11 +113,12 @@ class NoticeDetailsDialog extends StatelessWidget {
 
                   Text(
                   notice.title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
-                  ),
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
                 ),
 
               const SizedBox(height: 20),
@@ -132,9 +138,10 @@ class NoticeDetailsDialog extends StatelessWidget {
                   Expanded(
                     child: Text(
                       notice.department,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                   ),
@@ -211,7 +218,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                       ),
 
                       decoration: BoxDecoration(
-                        color: Colors.red.shade50,
+                        color: isDark
+                            ? Colors.red.withValues(alpha: 0.15)
+                            : Colors.red.shade50,
                         borderRadius:
                         BorderRadius.circular(30),
                       ),
@@ -253,7 +262,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
 
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: isDark
+                      ? const Color(0xFF2A2A2A)
+                      : Colors.grey.shade100,
                   borderRadius:
                   BorderRadius.circular(14),
                 ),
@@ -274,9 +285,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                         Expanded(
                           child: Text(
                             notice.publishedBy,
-                            style: const TextStyle(
-                              fontWeight:
-                              FontWeight.w600,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ),
                         ),
@@ -290,15 +301,18 @@ class NoticeDetailsDialog extends StatelessWidget {
 
                         Icon(
                           Icons.schedule,
-                          color:
-                          Colors.grey.shade700,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
                         ),
-
                         const SizedBox(width: 10),
 
                         Expanded(
                           child: Text(
                             getRelativeTime(),
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
                           ),
                         ),
                       ],
@@ -311,8 +325,9 @@ class NoticeDetailsDialog extends StatelessWidget {
 
                         Icon(
                           Icons.calendar_month,
-                          color:
-                          Colors.grey.shade700,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
                         ),
 
                         const SizedBox(width: 10),
@@ -321,8 +336,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                           child: Text(
                             DateFormat(
                               "dd MMM yyyy • hh:mm a",
-                            ).format(
-                              notice.createdAt,
+                            ).format(notice.createdAt),
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ),
                         ),
@@ -334,11 +350,12 @@ class NoticeDetailsDialog extends StatelessWidget {
 
               const SizedBox(height: 24),            /// ---------------- DESCRIPTION ----------------
 
-                      const Text(
+                      Text(
                         "Notice Description",
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
 
@@ -349,7 +366,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15,
                           height: 1.7,
-                          color: Colors.grey.shade800,
+                          color: isDark
+                              ? Colors.grey.shade300
+                              : Colors.grey.shade800,
                         ),
                       ),
 
@@ -363,7 +382,9 @@ class NoticeDetailsDialog extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
 
                           decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
+                            color: isDark
+                                ? Colors.blue.withValues(alpha: 0.12)
+                                : Colors.blue.shade50,
                             borderRadius:
                             BorderRadius.circular(14),
                           ),
@@ -382,7 +403,7 @@ class NoticeDetailsDialog extends StatelessWidget {
 
                               const SizedBox(width: 14),
 
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment:
                                   CrossAxisAlignment.start,
@@ -391,15 +412,20 @@ class NoticeDetailsDialog extends StatelessWidget {
                                     Text(
                                       "Attachment",
                                       style: TextStyle(
-                                        fontWeight:
-                                        FontWeight.bold,
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color,
                                       ),
                                     ),
 
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
 
                                     Text(
                                       "Download attached document",
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey.shade300
+                                            : Colors.black87,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -438,26 +464,22 @@ class NoticeDetailsDialog extends StatelessWidget {
                         height: 48,
 
                         child: OutlinedButton(
-
                           onPressed: () {
-
                             Navigator.pop(context);
-
                           },
-
                           style: OutlinedButton.styleFrom(
-                            shape:
-                            RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(
-                                12,
-                              ),
+                            foregroundColor:
+                            isDark ? Colors.white : Colors.black,
+                            side: BorderSide(
+                              color: isDark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade300,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-
-                          child: const Text(
-                            "Close",
-                          ),
+                          child: const Text("Close"),
                         ),
                       ),
                     ],

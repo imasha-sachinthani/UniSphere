@@ -243,12 +243,71 @@ class _AddLostItemDialogState
     Navigator.pop(context);
   }  @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-        title: Text(
-          widget.item == null
-              ? "Report Item"
-              : "Edit Item",
+
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    final inputDecoration = InputDecoration(
+      filled: true,
+      fillColor: isDark
+          ? const Color(0xFF1E1E1E)
+          : Colors.grey.shade100,
+
+      labelStyle: TextStyle(
+        color: isDark
+            ? Colors.grey.shade300
+            : Colors.grey.shade700,
+      ),
+
+      hintStyle: TextStyle(
+        color: isDark
+            ? Colors.grey.shade500
+            : Colors.grey.shade600,
+      ),
+
+      prefixIconColor: isDark
+          ? Colors.grey.shade400
+          : Colors.grey.shade700,
+
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: isDark
+              ? Colors.grey.shade700
+              : Colors.grey.shade300,
         ),
+      ),
+
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Colors.blue,
+          width: 2,
+        ),
+      ),
+
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+
+    return AlertDialog(
+      backgroundColor: isDark
+          ? const Color(0xFF2A2A2A)
+          : Colors.white,
+
+      title: Text(
+        widget.item == null
+            ? "Report Item"
+            : "Edit Item",
+        style: TextStyle(
+          color: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
 
         content: SizedBox(
             width: 430,
@@ -314,8 +373,9 @@ class _AddLostItemDialogState
     width: double.infinity,
 
     decoration: BoxDecoration(
-    color:
-    Colors.grey.shade200,
+      color: isDark
+          ? const Color(0xFF1E1E1E)
+          : Colors.grey.shade200,
 
     borderRadius:
     BorderRadius.circular(
@@ -367,13 +427,10 @@ class _AddLostItemDialogState
     controller:
     titleController,
 
-    decoration:
-    const InputDecoration(
-    labelText:
-    "Item Name",
+      decoration: inputDecoration.copyWith(
+        labelText: "Item Name",
+        prefixIcon: const Icon(Icons.inventory),
 
-    prefixIcon:
-    Icon(Icons.inventory),
     ),
 
     validator: (value) {
@@ -392,23 +449,14 @@ class _AddLostItemDialogState
 
     /// ---------- DESCRIPTION ----------
 
-    TextFormField(
-
-    controller:
-    descriptionController,
-
-    maxLines: 3,
-
-    decoration:
-    const InputDecoration(
-
-    labelText:
-    "Description",
-
-    prefixIcon:
-    Icon(Icons.description),
-    ),
-    ),
+                        TextFormField(
+                          controller: descriptionController,
+                          maxLines: 3,
+                          decoration: inputDecoration.copyWith(
+                            labelText: "Description",
+                            prefixIcon: const Icon(Icons.description),
+                          ),
+                        ),
 
     const SizedBox(height: 16),
 
@@ -419,15 +467,10 @@ class _AddLostItemDialogState
     controller:
     locationController,
 
-    decoration:
-    const InputDecoration(
-
-    labelText:
-    "Location",
-
-    prefixIcon:
-    Icon(Icons.location_on),
-    ),
+      decoration: inputDecoration.copyWith(
+        labelText: "Location",
+        prefixIcon: const Icon(Icons.location_on),
+      ),
 
     validator: (value) {
 
@@ -449,15 +492,10 @@ class _AddLostItemDialogState
 
     value: selectedCategory,
 
-    decoration:
-    const InputDecoration(
-
-    labelText:
-    "Category",
-
-    prefixIcon:
-    Icon(Icons.category),
-    ),
+      decoration: inputDecoration.copyWith(
+        labelText: "Category",
+        prefixIcon: const Icon(Icons.category),
+      ),
 
     items: categories
         .map(
@@ -489,15 +527,10 @@ class _AddLostItemDialogState
 
     value: selectedStatus,
 
-    decoration:
-    const InputDecoration(
-
-    labelText:
-    "Status",
-
-    prefixIcon:
-    Icon(Icons.flag),
-    ),
+      decoration: inputDecoration.copyWith(
+        labelText: "Status",
+        prefixIcon: const Icon(Icons.flag),
+      ),
 
     items: statusList
         .map(
@@ -533,15 +566,10 @@ class _AddLostItemDialogState
     keyboardType:
     TextInputType.phone,
 
-    decoration:
-    const InputDecoration(
-
-    labelText:
-    "Phone Number",
-
-    prefixIcon:
-    Icon(Icons.phone),
-    ),
+      decoration: inputDecoration.copyWith(
+        labelText: "Phone Number",
+        prefixIcon: const Icon(Icons.phone),
+      ),
     ),                const SizedBox(height: 20),
 
                         /// ---------- OWNER INFORMATION ----------
@@ -551,7 +579,9 @@ class _AddLostItemDialogState
                           padding: const EdgeInsets.all(16),
 
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                            color: isDark
+                                ? const Color(0xFF1E1E1E)
+                                : Colors.grey.shade100,
                             borderRadius:
                             BorderRadius.circular(14),
                           ),
@@ -562,12 +592,15 @@ class _AddLostItemDialogState
 
                             children: [
 
-                              const Text(
+                              Text(
                                 "Owner Information",
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight:
-                                  FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
                                 ),
                               ),
 
@@ -578,8 +611,9 @@ class _AddLostItemDialogState
 
                                   CircleAvatar(
                                     radius: 24,
-                                    backgroundColor:
-                                    Colors.blue.shade100,
+                                    backgroundColor: isDark
+                                        ? Colors.blue.withOpacity(.18)
+                                        : Colors.blue.shade100,
                                     child: const Icon(
                                       Icons.person,
                                       color: Colors.blue,
@@ -614,8 +648,9 @@ class _AddLostItemDialogState
                                         Text(
                                           email,
                                           style: TextStyle(
-                                            color: Colors
-                                                .grey.shade600,
+                                            color: isDark
+                                                ? Colors.grey.shade400
+                                                : Colors.grey.shade600,
                                           ),
                                         ),
                                       ],
@@ -640,8 +675,13 @@ class _AddLostItemDialogState
               : () {
             Navigator.pop(context);
           },
-          child: const Text(
+          child: Text(
             "Cancel",
+            style: TextStyle(
+              color: isDark
+                  ? Colors.grey.shade300
+                  : Colors.grey.shade700,
+            ),
           ),
         ),
 

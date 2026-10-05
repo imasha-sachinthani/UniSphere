@@ -35,8 +35,7 @@ class UniSphereApp extends StatelessWidget {
 
           theme: AppTheme.lightTheme,
 
-          // අපි next step එකේ හදනවා
-          darkTheme: ThemeData.dark(),
+          darkTheme: AppTheme.darkTheme,
 
           themeMode: themeProvider.themeMode,
 

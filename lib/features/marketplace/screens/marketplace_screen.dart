@@ -450,32 +450,30 @@ class _MarketplaceScreenState
             ],
         ),
 
-      floatingActionButtonLocation:
-      FloatingActionButtonLocation
-          .centerFloat,
-
-      floatingActionButton:
-      FloatingActionButton.extended(
-
-        icon: const Icon(
-          Icons.add,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(
+          right: 10,
+          bottom: 10,
         ),
-
-        label: const Text(
-          "Add Product",
+        child: FloatingActionButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (_) => const AddProductDialog(),
+            );
+          },
+          backgroundColor: const Color(0xFF0D47A1),
+          foregroundColor: Colors.white,
+          elevation: 6,
+          child: const Icon(
+            Icons.add,
+            size: 28,
+          ),
         ),
-
-        onPressed: () {
-
-          showDialog(
-
-            context: context,
-
-            builder: (_) =>
-            const AddProductDialog(),
-          );
-        },
       ),
+
+      floatingActionButtonLocation:
+      FloatingActionButtonLocation.endFloat,
     );
   }
 }

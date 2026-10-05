@@ -71,6 +71,9 @@ class _LostFoundScreenState
   @override
   Widget build(BuildContext context) {
 
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
 
       appBar: AppBar(
@@ -550,8 +553,9 @@ class _LostFoundScreenState
 
         elevation: 5,
 
-        backgroundColor: Colors.blue,
-
+        backgroundColor: isDark
+            ? const Color(0xFF0D47A1)
+            : Colors.blue,
         foregroundColor: Colors.white,
 
         onPressed: () {

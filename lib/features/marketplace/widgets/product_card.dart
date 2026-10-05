@@ -107,6 +107,12 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    final cardColor =
+    isDark ? const Color(0xFF1E1E1E) : Colors.white;
+
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
@@ -126,6 +132,7 @@ class ProductCard extends StatelessWidget {
               snapshot.data ?? false;
 
           return Card(
+            color: cardColor,
               elevation: 4,
               margin: const EdgeInsets.only(bottom: 20),
 
@@ -203,9 +210,9 @@ class ProductCard extends StatelessWidget {
                     return Container(
                       height: 190,
 
-                      color: Colors
-                          .grey
-                          .shade300,
+                      color: isDark
+                          ? const Color(0xFF2A2A2A)
+                          : Colors.grey.shade300,
 
                       child:
                       const Center(
@@ -269,8 +276,10 @@ class ProductCard extends StatelessWidget {
           child: CircleAvatar(
           radius: 22,
 
-          backgroundColor:
-          Colors.white,
+            backgroundColor:
+            isDark
+                ? const Color(0xFF2A2A2A)
+                : Colors.white,
 
           child: IconButton(
 
@@ -323,17 +332,12 @@ class ProductCard extends StatelessWidget {
 
           Expanded(
           child: Text(
-
-          product.title,
-
-          style:
-          const TextStyle(
-
-          fontSize: 22,
-
-          fontWeight:
-          FontWeight.bold,
-          ),
+            product.title,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
           ),
 
@@ -383,11 +387,13 @@ class ProductCard extends StatelessWidget {
           overflow:
           TextOverflow.ellipsis,
 
-          style: TextStyle(
-          color: Colors.grey.shade700,
-          height: 1.5,
-          fontSize: 15,
-          ),
+                          style: TextStyle(
+                            color: isDark
+                                ? Colors.grey.shade300
+                                : Colors.grey.shade700,
+                            height: 1.5,
+                            fontSize: 15,
+                          ),
           ),
 
           const SizedBox(height: 18),
@@ -418,38 +424,35 @@ class ProductCard extends StatelessWidget {
           ),
           ),
 
-          Chip(
+            Chip(
+              avatar: Icon(
+                product.condition == "New"
+                    ? Icons.verified
+                    : Icons.history,
+                size: 18,
+                color: product.condition == "New"
+                    ? Colors.green
+                    : Colors.orange,
+              ),
 
-          avatar: Icon(
+              label: Text(
+                product.condition,
+                style: TextStyle(
+                  color: isDark
+                      ? Colors.white
+                      : Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
-          product.condition == "New"
-
-          ? Icons.verified
-
-              : Icons.history,
-
-          size: 18,
-
-          color:
-          product.condition == "New"
-
-          ? Colors.green
-
-              : Colors.orange,
-          ),
-
-          label: Text(
-          product.condition,
-          ),
-
-          backgroundColor:
-
-          product.condition == "New"
-
-          ? Colors.green.shade100
-
-              : Colors.orange.shade100,
-          ),
+              backgroundColor: product.condition == "New"
+                  ? (isDark
+                  ? Colors.green.withValues(alpha: 0.18)
+                  : Colors.green.shade100)
+                  : (isDark
+                  ? Colors.deepOrange.withValues(alpha: 0.22)
+                  : Colors.orange.shade100),
+            ),
           ],
           ),
 
@@ -465,13 +468,17 @@ class ProductCard extends StatelessWidget {
 
           decoration: BoxDecoration(
 
-          color: Colors.green.shade50,
+            color: isDark
+                ? Colors.green.withValues(alpha: 0.12)
+                : Colors.green.shade50,
 
           borderRadius:
           BorderRadius.circular(16),
 
           border: Border.all(
-          color: Colors.green.shade100,
+            color: isDark
+                ? Colors.green.withValues(alpha: 0.25)
+                : Colors.green.shade100,
           ),
           ),
 
@@ -518,8 +525,9 @@ class ProductCard extends StatelessWidget {
           "Price",
 
           style: TextStyle(
-          color:
-          Colors.grey.shade600,
+            color: isDark
+                ? Colors.grey.shade400
+                : Colors.grey.shade600,
           ),
           ),
 
@@ -558,7 +566,9 @@ class ProductCard extends StatelessWidget {
 
           decoration: BoxDecoration(
 
-          color: Colors.grey.shade100,
+            color: isDark
+                ? const Color(0xFF252525)
+                : Colors.grey.shade100,
 
           borderRadius:
           BorderRadius.circular(16),
@@ -576,8 +586,9 @@ class ProductCard extends StatelessWidget {
 
           radius: 25,
 
-          backgroundColor:
-          Colors.blue.shade100,
+            backgroundColor: isDark
+                ? Colors.blue.withValues(alpha: 0.20)
+                : Colors.blue.shade100,
 
           child: const Icon(
           Icons.person,
@@ -617,8 +628,9 @@ class ProductCard extends StatelessWidget {
 
           style: TextStyle(
 
-          color:
-          Colors.grey.shade600,
+            color: isDark
+                ? Colors.grey.shade400
+                : Colors.grey.shade600,
 
           fontSize: 13,
           ),
@@ -677,26 +689,17 @@ class ProductCard extends StatelessWidget {
           "Contact Seller",
           ),
 
-          style:
-          ElevatedButton.styleFrom(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDark
+                  ? const Color(0xFF0D47A1)
+                  : Colors.blue,
 
-          backgroundColor:
-          Colors.blue,
-
-          foregroundColor:
-          Colors.white,
-
-          elevation: 0,
-
-          shape:
-          RoundedRectangleBorder(
-
-          borderRadius:
-          BorderRadius.circular(
-          12,
-          ),
-          ),
-          ),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
           ),
           ],
@@ -713,7 +716,9 @@ class ProductCard extends StatelessWidget {
           Icon(
           Icons.schedule,
           size: 18,
-          color: Colors.grey.shade600,
+            color: isDark
+                ? Colors.grey.shade400
+                : Colors.grey.shade600,
           ),
 
           const SizedBox(width: 6),
@@ -721,8 +726,9 @@ class ProductCard extends StatelessWidget {
           Text(
           getRelativeTime(),
           style: TextStyle(
-          color:
-          Colors.grey.shade600,
+            color: isDark
+                ? Colors.grey.shade400
+                : Colors.grey.shade600,
           ),
           ),
 
@@ -736,7 +742,9 @@ class ProductCard extends StatelessWidget {
           ),
 
           decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+            color: isDark
+                ? Colors.blue.withValues(alpha: 0.15)
+                : Colors.blue.shade50,
 
           borderRadius:
           BorderRadius.circular(
@@ -748,8 +756,9 @@ class ProductCard extends StatelessWidget {
           "Your Product",
 
           style: TextStyle(
-          color:
-          Colors.blue.shade700,
+            color: isDark
+                ? Colors.blue.shade200
+                : Colors.blue.shade700,
 
           fontWeight:
           FontWeight.bold,
@@ -862,17 +871,18 @@ class ProductCard extends StatelessWidget {
 
           decoration: BoxDecoration(
 
-          color:
-          Colors.red.shade50,
-
+            color: isDark
+                ? Colors.red.withValues(alpha: 0.15)
+                : Colors.red.shade50,
           borderRadius:
           BorderRadius.circular(
           14,
           ),
 
           border: Border.all(
-          color:
-          Colors.red.shade200,
+            color: isDark
+                ? Colors.red.withValues(alpha: 0.35)
+                : Colors.red.shade200,
           ),
           ),
 
@@ -923,8 +933,9 @@ class ProductCard extends StatelessWidget {
 
           decoration: BoxDecoration(
 
-          color:
-          Colors.green.shade50,
+            color: isDark
+                ? Colors.green.withValues(alpha: 0.15)
+                : Colors.green.shade50,
 
           borderRadius:
           BorderRadius.circular(
@@ -932,8 +943,9 @@ class ProductCard extends StatelessWidget {
           ),
 
           border: Border.all(
-          color:
-          Colors.green.shade200,
+            color: isDark
+                ? Colors.green.withValues(alpha: 0.35)
+                : Colors.green.shade200,
           ),
           ),
 
@@ -985,8 +997,9 @@ class ProductCard extends StatelessWidget {
           decoration:
           BoxDecoration(
 
-          color:
-          Colors.blue.shade50,
+            color: isDark
+                ? Colors.blue.withValues(alpha: 0.15)
+                : Colors.blue.shade50,
 
           borderRadius:
           BorderRadius.circular(
@@ -1045,8 +1058,9 @@ class ProductCard extends StatelessWidget {
 
                 decoration:
                 BoxDecoration(
-                  color:
-                  Colors.orange.shade50,
+                  color: isDark
+                      ? Colors.orange.withValues(alpha: 0.15)
+                      : Colors.orange.shade50,
 
                   borderRadius:
                   BorderRadius.circular(

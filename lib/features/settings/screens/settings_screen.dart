@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/providers/theme_provider.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -19,8 +20,10 @@ class _SettingsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: AppBar(
         title: const Text("Settings"),
@@ -39,6 +42,11 @@ class _SettingsScreenState
       ) {
 
     return SwitchListTile(
+
+      activeColor: Colors.white,
+      activeTrackColor: const Color(0xFF0D47A1),
+      inactiveThumbColor: Colors.grey,
+      inactiveTrackColor: Colors.grey.shade700,
 
     secondary: const Icon(
     Icons.dark_mode,
@@ -65,9 +73,19 @@ class _SettingsScreenState
     },
     ),
 
-    const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+          ),
 
     SwitchListTile(
+
+      activeColor: Colors.white,
+      activeTrackColor: const Color(0xFF0D47A1),
+      inactiveThumbColor: Colors.grey,
+      inactiveTrackColor: Colors.grey.shade700,
 
     secondary: const Icon(
     Icons.notifications,
@@ -90,7 +108,12 @@ class _SettingsScreenState
     },
     ),
 
-    const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+          ),
 
     ListTile(
 
@@ -102,33 +125,40 @@ class _SettingsScreenState
     "About App",
     ),
 
-    subtitle: const Text(
-    "UniSphere v1.0.0",
-    ),
+      subtitle: Text(
+        "UniSphere v1.0.0",
+        style: TextStyle(
+          color: isDark
+              ? Colors.grey.shade400
+              : Colors.grey.shade600,
+        ),
+      ),
 
-    trailing: const Icon(
-    Icons.chevron_right,
-    ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: isDark
+            ? Colors.grey.shade400
+            : Colors.grey.shade700,
+      ),
 
     onTap: () {
 
-    showAboutDialog(
-
-    context: context,
-
-    applicationName:
-    "UniSphere",
-
-    applicationVersion:
-    "1.0.0",
-
-    applicationLegalese:
-    "Developed for NSBM Students",
-    );
+      showAboutDialog(
+        context: context,
+        applicationName: "UniSphere",
+        applicationVersion: "1.0.0",
+        applicationLegalese: "Developed for NSBM Students",
+        barrierColor: Colors.black54,
+      );
     },
     ),
 
-    const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+          ),
 
     ListTile(
 
@@ -140,26 +170,29 @@ class _SettingsScreenState
     "Privacy Policy",
     ),
 
-    trailing: const Icon(
-    Icons.chevron_right,
+      trailing: Icon(
+        Icons.chevron_right,
+        color: isDark
+            ? Colors.grey.shade400
+            : Colors.grey.shade700,
+      ),
+
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const PrivacyPolicyScreen(),
+          ),
+        );
+      },
     ),
 
-    onTap: () {
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-
-    const SnackBar(
-
-    content: Text(
-    "Privacy Policy coming soon.",
-    ),
-    ),
-    );
-    },
-    ),
-
-    const Divider(height: 1),
+          Divider(
+            height: 1,
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+          ),
 
           ListTile(
 
@@ -183,15 +216,25 @@ class _SettingsScreenState
                 context: context,
 
                 builder: (_) => AlertDialog(
+                  backgroundColor: isDark
+                      ? const Color(0xFF232323)
+                      : Colors.white,
 
-                  title: const Text(
+                  title: Text(
                     "Logout",
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
 
-                  content: const Text(
+                  content: Text(
                     "Are you sure you want to logout?",
+                    style: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade300
+                          : Colors.black87,
+                    ),
                   ),
-
                   actions: [
 
                     TextButton(
@@ -255,7 +298,9 @@ class _SettingsScreenState
             child: Text(
               "Version 1.0.0",
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: isDark
+                    ? Colors.grey.shade500
+                    : Colors.grey.shade600,
               ),
             ),
           ),

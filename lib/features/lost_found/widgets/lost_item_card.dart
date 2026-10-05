@@ -130,6 +130,9 @@ class LostItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
@@ -142,6 +145,11 @@ class LostItemCard extends StatelessWidget {
         margin: const EdgeInsets.only(
           bottom: 20,
         ),
+
+      color: isDark
+          ? const Color(0xFF232323)
+          : Colors.white,
+
         shape: RoundedRectangleBorder(
           borderRadius:
           BorderRadius.circular(20),
@@ -327,7 +335,9 @@ class LostItemCard extends StatelessWidget {
 
         decoration: BoxDecoration(
 
-          color: Colors.blue,
+          color: isDark
+              ? Colors.blue.shade700
+              : Colors.blue,
 
           borderRadius:
           BorderRadius.circular(
@@ -376,7 +386,10 @@ class LostItemCard extends StatelessWidget {
 
     if (isOwner)
 
-    PopupMenuButton<String>(
+      PopupMenuButton<String>(
+        color: isDark
+            ? const Color(0xFF2D2D2D)
+            : Colors.white,
 
     onSelected: (value) {
 
@@ -391,16 +404,30 @@ class LostItemCard extends StatelessWidget {
     }
     },
 
-    itemBuilder: (_) => const [
+    itemBuilder: (_) => [
 
     PopupMenuItem(
     value: "edit",
-    child: Text("Edit"),
+      child: Text(
+        "Edit",
+        style: TextStyle(
+          color: isDark
+              ? Colors.white
+              : Colors.black,
+        ),
+      ),
     ),
 
     PopupMenuItem(
     value: "delete",
-    child: Text("Delete"),
+      child: Text(
+        "Delete",
+        style: TextStyle(
+          color: isDark
+              ? Colors.white
+              : Colors.black,
+        ),
+      ),
     ),
     ],
     ),
@@ -420,7 +447,9 @@ class LostItemCard extends StatelessWidget {
 
     style: TextStyle(
 
-    color: Colors.grey.shade700,
+      color: isDark
+          ? Colors.grey.shade300
+          : Colors.grey.shade700,
 
     height: 1.5,
     ),
@@ -433,7 +462,9 @@ class LostItemCard extends StatelessWidget {
                     padding: const EdgeInsets.all(14),
 
                     decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
+                      color: isDark
+                          ? const Color(0xFF3A3120)
+                          : Colors.orange.shade50,
                       borderRadius:
                       BorderRadius.circular(14),
                     ),
@@ -451,10 +482,12 @@ class LostItemCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             item.location,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
-                              fontWeight:
-                              FontWeight.w500,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -471,7 +504,9 @@ class LostItemCard extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
 
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: isDark
+                          ? const Color(0xFF262626)
+                          : Colors.grey.shade100,
                       borderRadius:
                       BorderRadius.circular(14),
                     ),
@@ -484,11 +519,14 @@ class LostItemCard extends StatelessWidget {
 
                             CircleAvatar(
                               radius: 24,
-                              backgroundColor:
-                              Colors.blue.shade100,
-                              child: const Icon(
+                              backgroundColor: isDark
+                                  ? const Color(0xFF1E3A5F)
+                                  : Colors.blue.shade100,
+                              child: Icon(
                                 Icons.person,
-                                color: Colors.blue,
+                                color: isDark
+                                    ? Colors.blue.shade200
+                                    : Colors.blue,
                               ),
                             ),
 
@@ -518,8 +556,9 @@ class LostItemCard extends StatelessWidget {
                                   Text(
                                     item.email,
                                     style: TextStyle(
-                                      color: Colors
-                                          .grey.shade600,
+                                      color: isDark
+                                          ? Colors.grey.shade400
+                                          : Colors.grey.shade600,
                                     ),
                                   ),
                                 ],
@@ -533,9 +572,11 @@ class LostItemCard extends StatelessWidget {
                         Row(
                           children: [
 
-                            const Icon(
+                            Icon(
                               Icons.phone,
-                              color: Colors.green,
+                              color: isDark
+                                  ? Colors.greenAccent
+                                  : Colors.green,
                             ),
 
                             const SizedBox(width: 10),
@@ -545,6 +586,11 @@ class LostItemCard extends StatelessWidget {
                                 item.phone.isEmpty
                                     ? "Phone number not available"
                                     : item.phone,
+                                style: TextStyle(
+                                  color: isDark
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
                               ),
                             ),
                           ],
@@ -579,7 +625,13 @@ class LostItemCard extends StatelessWidget {
                       style:
                       ElevatedButton.styleFrom(
                         backgroundColor:
-                        Colors.blue,
+                        item.phone.isEmpty
+                            ? (isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300)
+                            : (isDark
+                            ? const Color(0xFF1565C0)
+                            : Colors.blue),
                         foregroundColor:
                         Colors.white,
                         elevation: 0,
@@ -597,8 +649,9 @@ class LostItemCard extends StatelessWidget {
                       Icon(
                         Icons.schedule,
                         size: 18,
-                        color:
-                        Colors.grey.shade600,
+                        color: isDark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600,
                       ),
 
                       const SizedBox(width: 6),
@@ -606,8 +659,9 @@ class LostItemCard extends StatelessWidget {
                       Text(
                         getRelativeTime(),
                         style: TextStyle(
-                          color: Colors
-                              .grey.shade600,
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
                         ),
                       ),
 
@@ -624,8 +678,9 @@ class LostItemCard extends StatelessWidget {
                           ),
 
                           decoration: BoxDecoration(
-                            color:
-                            Colors.blue.shade50,
+                            color: isDark
+                                ? Colors.blue.withOpacity(.18)
+                                : Colors.blue.shade50,
                             borderRadius:
                             BorderRadius.circular(
                               20,
@@ -635,8 +690,9 @@ class LostItemCard extends StatelessWidget {
                           child: Text(
                             "Your Post",
                             style: TextStyle(
-                              color:
-                              Colors.blue.shade700,
+                              color: isDark
+                                  ? Colors.blue.shade200
+                                  : Colors.blue.shade700,
                               fontWeight:
                               FontWeight.bold,
                               fontSize: 12,

@@ -11,6 +11,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(
@@ -60,14 +62,19 @@ class ProfileScreen extends StatelessWidget {
               Center(
                 child: CircleAvatar(
                   radius: 60,
-                  backgroundColor: Colors.grey.shade200,
+                  backgroundColor: isDark
+                      ? const Color(0xFF232323)
+                      : Colors.grey.shade200,
                   backgroundImage: profile.imageUrl.isNotEmpty
                       ? NetworkImage(profile.imageUrl)
                       : null,
                   child: profile.imageUrl.isEmpty
-                      ? const Icon(
+                      ? Icon(
                     Icons.person,
                     size: 60,
+                    color: isDark
+                        ? Colors.blue.shade200
+                        : Colors.blue.shade100,
                   )
                       : null,
                 ),
@@ -93,7 +100,9 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   profile.email,
                   style: TextStyle(
-                    color: Colors.grey.shade600,
+                    color: isDark
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600,
                     fontSize: 15,
                   ),
                 ),
@@ -102,6 +111,9 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 30),
 
               Card(
+                color: isDark
+                    ? const Color(0xFF232323)
+                    : Colors.white,
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -113,41 +125,81 @@ class ProfileScreen extends StatelessWidget {
                         Icons.phone,
                         color: Colors.blue,
                       ),
-                      title: const Text("Phone"),
+                      title: Text(
+                        "Phone",
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
                       subtitle: Text(
                         profile.phone.isEmpty
                             ? "-"
                             : profile.phone,
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
+                        ),
                       ),
                     ),
 
-                    const Divider(height: 1),
+                    Divider(
+                      height: 1,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
+                    ),
 
                     ListTile(
                       leading: const Icon(
                         Icons.school,
                         color: Colors.deepPurple,
                       ),
-                      title: const Text("Faculty"),
+                      title: Text(
+                        "Faculty",
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
                       subtitle: Text(
                         profile.faculty.isEmpty
                             ? "-"
                             : profile.faculty,
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
+                        ),
                       ),
                     ),
 
-                    const Divider(height: 1),
+                    Divider(
+                      height: 1,
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
+                    ),
 
                     ListTile(
                       leading: const Icon(
                         Icons.calendar_today,
                         color: Colors.orange,
                       ),
-                      title: const Text("Academic Year"),
+                      title: Text(
+                        "Academic Year",
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
                       subtitle: Text(
                         profile.year.isEmpty
                             ? "-"
                             : profile.year,
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ],
@@ -159,6 +211,13 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(
                 height: 50,
                 child: ElevatedButton.icon(
+
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark
+                        ? const Color(0xFF23263A)
+                        : Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
                   icon: const Icon(Icons.edit),
                   label: const Text("Edit Profile"),
                   onPressed: () {
@@ -176,6 +235,7 @@ class ProfileScreen extends StatelessWidget {
 
               SizedBox(
                 height: 50,
+
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
@@ -187,9 +247,22 @@ class ProfileScreen extends StatelessWidget {
                     final confirm = await showDialog<bool>(
                       context: context,
                       builder: (_) => AlertDialog(
-                        title: const Text("Logout"),
-                        content: const Text(
+                        backgroundColor: isDark
+                            ? const Color(0xFF232323)
+                            : Colors.white,
+                        title: Text(
+                          "Logout",
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        content: Text(
                           "Are you sure you want to logout?",
+                          style: TextStyle(
+                            color: isDark
+                                ? Colors.grey.shade300
+                                : Colors.black87,
+                          ),
                         ),
                         actions: [
                           TextButton(
@@ -225,7 +298,9 @@ class ProfileScreen extends StatelessWidget {
                 child: Text(
                   "UniSphere v1.0.0",
                   style: TextStyle(
-                    color: Colors.grey.shade600,
+                    color: isDark
+                        ? Colors.grey.shade500
+                        : Colors.grey.shade600,
                   ),
                 ),
               ),

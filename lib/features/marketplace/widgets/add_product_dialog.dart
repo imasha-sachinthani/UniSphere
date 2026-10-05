@@ -203,12 +203,67 @@ class _AddProductDialogState
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-        title: Text(
-          widget.product == null
-              ? "Add Product"
-              : "Edit Product",
+
+    final isDark =
+        Theme.of(context).brightness == Brightness.dark;
+
+    final inputDecoration = InputDecoration(
+      filled: true,
+      fillColor: isDark
+          ? const Color(0xFF1E1E1E)
+          : Colors.grey.shade100,
+
+      labelStyle: TextStyle(
+        color: isDark
+            ? Colors.grey.shade300
+            : Colors.grey.shade700,
+      ),
+
+      hintStyle: TextStyle(
+        color: isDark
+            ? Colors.grey.shade500
+            : Colors.grey.shade600,
+      ),
+
+      prefixIconColor: isDark
+          ? Colors.grey.shade400
+          : Colors.grey.shade700,
+
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: isDark
+              ? Colors.grey.shade700
+              : Colors.grey.shade300,
         ),
+      ),
+
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(
+          color: Colors.blue,
+          width: 2,
+        ),
+      ),
+
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+
+    return AlertDialog(
+      backgroundColor: isDark
+          ? const Color(0xFF2A2A2A)
+          : Colors.white,
+      title: Text(
+        widget.product == null
+            ? "Add Product"
+            : "Edit Product",
+        style: TextStyle(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
 
         content: SizedBox(
             width: 420,
@@ -220,14 +275,10 @@ class _AddProductDialogState
                     child: Column(
                         children: [                TextFormField(
                       controller: titleController,
-                      decoration:
-                      const InputDecoration(
-                        labelText:
-                        "Product Name",
-                        prefixIcon: Icon(
-                          Icons.shopping_bag,
-                        ),
-                      ),
+                          decoration: inputDecoration.copyWith(
+                            labelText: "Product Name",
+                            prefixIcon: const Icon(Icons.shopping_bag),
+                          ),
                       validator: (value) {
                         if (value == null ||
                             value.trim().isEmpty) {
@@ -243,13 +294,9 @@ class _AddProductDialogState
                     controller:
                     descriptionController,
                     maxLines: 3,
-                    decoration:
-                    const InputDecoration(
-                      labelText:
-                      "Description",
-                      prefixIcon: Icon(
-                        Icons.description,
-                      ),
+                    decoration: inputDecoration.copyWith(
+                      labelText: "Description",
+                      prefixIcon: const Icon(Icons.description),
                     ),
                   ),
 
@@ -260,13 +307,9 @@ class _AddProductDialogState
                     priceController,
                     keyboardType:
                     TextInputType.number,
-                    decoration:
-                    const InputDecoration(
-                      labelText:
-                      "Price (LKR)",
-                      prefixIcon: Icon(
-                        Icons.currency_rupee,
-                      ),
+                    decoration: inputDecoration.copyWith(
+                      labelText: "Price (LKR)",
+                      prefixIcon: const Icon(Icons.currency_rupee),
                     ),
                     validator: (value) {
                       if (value == null ||
@@ -290,13 +333,9 @@ class _AddProductDialogState
                       String>(
                     value:
                     selectedCategory,
-                    decoration:
-                    const InputDecoration(
-                      labelText:
-                      "Category",
-                      prefixIcon: Icon(
-                        Icons.category,
-                      ),
+                    decoration: inputDecoration.copyWith(
+                      labelText: "Category",
+                      prefixIcon: const Icon(Icons.category),
                     ),
                     items: categories
                         .map(
@@ -318,12 +357,10 @@ class _AddProductDialogState
 
                   const SizedBox(height: 16),                DropdownButtonFormField<String>(
                   value: selectedCondition,
-                  decoration: const InputDecoration(
-                    labelText: "Condition",
-                    prefixIcon: Icon(
-                      Icons.verified,
-                    ),
-                  ),
+                            decoration: inputDecoration.copyWith(
+                              labelText: "Condition",
+                              prefixIcon: const Icon(Icons.verified),
+                            ),
                   items: conditions
                       .map(
                         (condition) =>
@@ -349,13 +386,9 @@ class _AddProductDialogState
                     phoneController,
                     keyboardType:
                     TextInputType.phone,
-                    decoration:
-                    const InputDecoration(
-                      labelText:
-                      "Phone Number",
-                      prefixIcon: Icon(
-                        Icons.phone,
-                      ),
+                    decoration: inputDecoration.copyWith(
+                      labelText: "Phone Number",
+                      prefixIcon: const Icon(Icons.phone),
                     ),
                     validator: (value) {
                       if (value != null &&
@@ -377,12 +410,10 @@ class _AddProductDialogState
                       16,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                      Colors.grey.shade100,
-                      borderRadius:
-                      BorderRadius.circular(
-                        12,
-                      ),
+                      color: isDark
+                          ? const Color(0xFF1E1E1E)
+                          : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment:
@@ -407,9 +438,9 @@ class _AddProductDialogState
                           children: [
 
                             CircleAvatar(
-                              backgroundColor:
-                              Colors.blue
-                                  .shade100,
+                              backgroundColor: isDark
+                                  ? Colors.blue.withValues(alpha: 0.20)
+                                  : Colors.blue.shade100,
                               child: const Icon(
                                 Icons.person,
                                 color:
@@ -449,9 +480,9 @@ class _AddProductDialogState
                                     sellerEmail,
                                     style:
                                     TextStyle(
-                                      color: Colors
-                                          .grey
-                                          .shade600,
+                                      color: isDark
+                                          ? Colors.grey.shade400
+                                          : Colors.grey.shade600,
                                     ),
                                   ),
                                 ],
@@ -465,11 +496,15 @@ class _AddProductDialogState
 
                   const SizedBox(height: 20),
 
-                  SwitchListTile(
-                    value: widget.product
-                        ?.isSold ??
-                        false,
-                    onChanged: null,
+                          SwitchListTile(
+                            value: widget.product?.isSold ?? false,
+                            onChanged: null,
+
+                            inactiveThumbColor:
+                            isDark ? Colors.grey.shade600 : null,
+
+                            inactiveTrackColor:
+                            isDark ? Colors.grey.shade800 : null,
                     title: const Text(
                       "Sold",
                     ),
@@ -491,8 +526,13 @@ class _AddProductDialogState
               : () {
             Navigator.pop(context);
           },
-          child: const Text(
+          child: Text(
             "Cancel",
+            style: TextStyle(
+              color: isDark
+                  ? Colors.grey.shade300
+                  : Colors.grey.shade700,
+            ),
           ),
         ),
 

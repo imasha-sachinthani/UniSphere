@@ -7,24 +7,30 @@ import '../../profile/screens/profile_screen.dart';
 class WelcomeHeader extends StatelessWidget {
   const WelcomeHeader({super.key});
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> getProfile() {
+  Stream<DocumentSnapshot<Map<String, dynamic>>?> getProfile() {
     final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Stream.value(null);
+    }
 
     return FirebaseFirestore.instance
         .collection("profiles")
-        .doc(user!.uid)
+        .doc(user.uid)
         .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>?>(
       stream: getProfile(),
       builder: (context, snapshot) {
         String fullName = "Student";
         String imageUrl = "";
 
-        if (snapshot.hasData && snapshot.data!.exists) {
+        if (snapshot.hasData &&
+            snapshot.data != null &&
+            snapshot.data!.exists) {
           final data = snapshot.data!.data();
 
           if (data != null) {
@@ -32,6 +38,9 @@ class WelcomeHeader extends StatelessWidget {
             imageUrl = data["imageUrl"] ?? "";
           }
         }
+
+        final isDark =
+            Theme.of(context).brightness == Brightness.dark;
 
         return Row(
           children: [
@@ -46,8 +55,7 @@ class WelcomeHeader extends StatelessWidget {
               },
               child: CircleAvatar(
                 radius: 28,
-                backgroundColor:
-                Theme.of(context).brightness == Brightness.dark
+                backgroundColor: isDark
                     ? const Color(0xFF1E1E1E)
                     : Colors.blue.shade100,
                 backgroundImage:
@@ -72,7 +80,7 @@ class WelcomeHeader extends StatelessWidget {
                     "Good Morning 👋",
                     style: TextStyle(
                       fontSize: 16,
-                      color: Theme.of(context).brightness == Brightness.dark
+                      color: isDark
                           ? Colors.grey.shade400
                           : Colors.grey.shade600,
                     ),
