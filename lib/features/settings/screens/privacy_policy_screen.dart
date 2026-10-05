@@ -20,6 +20,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
       ),
       child: ExpansionTile(
+        iconColor: const Color(0xFF0D47A1),
+        collapsedIconColor: const Color(0xFF0D47A1),
+
         leading: Icon(
           icon,
           color: const Color(0xFF0D47A1),
@@ -30,7 +33,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        childrenPadding: const EdgeInsets.fromLTRB(
+        childrenPadding:
+        const EdgeInsets.fromLTRB(
           20,
           0,
           20,
@@ -75,10 +79,14 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ? const Color(0xFF232323)
               : Colors.white,
           elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(22),
-          ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+              side: BorderSide(
+                color: isDark
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade300,
+              ),
+            ),
           child: Padding(
             padding: const EdgeInsets.all(22),
             child: Row(
@@ -208,6 +216,11 @@ class PrivacyPolicyScreen extends StatelessWidget {
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+          ),
         ),
         child: const ListTile(
           leading: Icon(

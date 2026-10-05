@@ -49,6 +49,20 @@ class AppTheme {
         ),
       ),
 
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: Colors.grey.shade900,
+        contentTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+        behavior: SnackBarBehavior.floating,
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+
       textTheme: const TextTheme(
         headlineLarge: AppTextStyles.heading,
         headlineMedium: AppTextStyles.subHeading,
@@ -64,7 +78,7 @@ class AppTheme {
 
       brightness: Brightness.dark,
 
-      scaffoldBackgroundColor: const Color(0xff121212),
+      scaffoldBackgroundColor: const Color(0xFF121212),
 
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
@@ -74,12 +88,12 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Color(0xff121212),
+        backgroundColor: Color(0xFF121212),
       ),
 
       cardTheme: CardThemeData(
         elevation: 2,
-        color: const Color(0xff1E1E1E),
+        color: const Color(0xFF1E1E1E),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -98,6 +112,27 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: const Color(0xFF232323),
+        contentTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+        ),
+        behavior: SnackBarBehavior.floating,
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+
+      textTheme: const TextTheme(
+        headlineLarge: AppTextStyles.heading,
+        headlineMedium: AppTextStyles.subHeading,
+        bodyMedium: AppTextStyles.body,
+        labelLarge: AppTextStyles.button,
       ),
     );
   }
