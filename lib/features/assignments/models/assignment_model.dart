@@ -14,7 +14,9 @@ class AssignmentModel {
   final int priority;
   final bool completed;
 
+  // Attachment
   final String attachmentUrl;
+  final String attachmentName;
 
   final DateTime createdAt;
 
@@ -29,45 +31,31 @@ class AssignmentModel {
     required this.priority,
     required this.completed,
     required this.attachmentUrl,
+    required this.attachmentName,
     required this.createdAt,
   });
 
-  factory AssignmentModel.fromFirestore(
-      DocumentSnapshot doc) {
-    final data =
-    doc.data() as Map<String, dynamic>;
+  factory AssignmentModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
     return AssignmentModel(
       id: doc.id,
-
       title: data["title"] ?? "",
-
       module: data["module"] ?? "",
-
       lecturer: data["lecturer"] ?? "",
-
       semester: data["semester"] ?? "",
-
-      description:
-      data["description"] ?? "",
-
+      description: data["description"] ?? "",
       deadline:
-      (data["deadline"] as Timestamp?)
-          ?.toDate() ??
+      (data["deadline"] as Timestamp?)?.toDate() ??
           DateTime.now(),
+      priority: data["priority"] ?? 2,
+      completed: data["completed"] ?? false,
 
-      priority:
-      data["priority"] ?? 2,
-
-      completed:
-      data["completed"] ?? false,
-
-      attachmentUrl:
-      data["attachmentUrl"] ?? "",
+      attachmentUrl: data["attachmentUrl"] ?? "",
+      attachmentName: data["attachmentName"] ?? "",
 
       createdAt:
-      (data["createdAt"] as Timestamp?)
-          ?.toDate() ??
+      (data["createdAt"] as Timestamp?)?.toDate() ??
           DateTime.now(),
     );
   }
@@ -75,22 +63,16 @@ class AssignmentModel {
   Map<String, dynamic> toMap() {
     return {
       "title": title,
-
       "module": module,
-
       "lecturer": lecturer,
-
       "semester": semester,
-
       "description": description,
-
       "deadline": deadline,
-
       "priority": priority,
-
       "completed": completed,
 
       "attachmentUrl": attachmentUrl,
+      "attachmentName": attachmentName,
 
       "createdAt": createdAt,
     };
@@ -107,6 +89,7 @@ class AssignmentModel {
     int? priority,
     bool? completed,
     String? attachmentUrl,
+    String? attachmentName,
     DateTime? createdAt,
   }) {
     return AssignmentModel(
@@ -115,17 +98,18 @@ class AssignmentModel {
       module: module ?? this.module,
       lecturer: lecturer ?? this.lecturer,
       semester: semester ?? this.semester,
-      description:
-      description ?? this.description,
+      description: description ?? this.description,
       deadline: deadline ?? this.deadline,
       priority: priority ?? this.priority,
-      completed:
-      completed ?? this.completed,
+      completed: completed ?? this.completed,
+
       attachmentUrl:
-      attachmentUrl ??
-          this.attachmentUrl,
-      createdAt:
-      createdAt ?? this.createdAt,
+      attachmentUrl ?? this.attachmentUrl,
+
+      attachmentName:
+      attachmentName ?? this.attachmentName,
+
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/marketplace_controller.dart';
 import '../models/product_model.dart';
+import '../../../core/services/cloudinary_service.dart';
 
 class AddProductDialog extends StatefulWidget {
   final ProductModel? product;
@@ -43,6 +44,10 @@ class _AddProductDialogState
 
   String? selectedCategory;
   String? selectedCondition;
+
+  String? imageUrl;
+
+  bool isUploadingImage = false;
 
   final List<String> categories = [
     "Books",
@@ -84,10 +89,44 @@ class _AddProductDialogState
     }
 
     loadCurrentUser();
+
+  }
+
+  Future<void> pickImage() async {
+    setState(() {
+      isUploadingImage = true;
+    });
+
+    try {
+      final url =
+      await CloudinaryService.pickAndUploadImage();
+
+      if (url != null) {
+        setState(() {
+          imageUrl = url;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        isUploadingImage = false;
+      });
+    }
   }
 
   @override
   void dispose() {
+
+
     titleController.dispose();
     descriptionController.dispose();
     priceController.dispose();
@@ -169,8 +208,8 @@ class _AddProductDialogState
       phone: phoneController.text
           .trim(),
 
-      imageUrl:
-      widget.product?.imageUrl ??
+      imageUrl: imageUrl ??
+          widget.product?.imageUrl ??
           "",
 
       isSold:
@@ -402,6 +441,29 @@ class _AddProductDialogState
                   ),
 
                   const SizedBox(height: 20),
+
+                          ElevatedButton.icon(
+                            onPressed: isUploadingImage ? null : pickImage,
+                            icon: isUploadingImage
+                                ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                                : const Icon(Icons.photo),
+
+                            label: Text(
+                              imageUrl == null
+                                  ? "Choose Product Image"
+                                  : "Image Selected ✓",
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
 
                   Container(
                     width: double.infinity,

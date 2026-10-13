@@ -1,9 +1,7 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../../../core/services/cloudinary_service.dart';
 
-import '../../../../core/services/image_picker_service.dart';
-import '../../../../core/services/storage_service.dart';
 import '../controllers/profile_controller.dart';
 import '../models/user_profile_model.dart';
 
@@ -28,9 +26,11 @@ class _EditProfileDialogState
   late TextEditingController emailController;
   late TextEditingController phoneController;
 
-  File? selectedImage;
+  String? imageUrl;
 
   bool isUploading = false;
+
+  bool isUploadingImage = false;
 
   String existingImageUrl = "";
 
@@ -89,14 +89,34 @@ class _EditProfileDialogState
   }
 
   Future<void> pickImage() async {
-    final image =
-    await ImagePickerService.pickImage();
-
-    if (image == null) return;
-
     setState(() {
-      selectedImage = image;
+      isUploadingImage = true;
     });
+
+    try {
+      final url =
+      await CloudinaryService.pickAndUploadImage();
+
+      if (url != null) {
+        setState(() {
+          imageUrl = url;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        isUploadingImage = false;
+      });
+    }
   }
 
   Future<void> save() async {
@@ -108,15 +128,9 @@ class _EditProfileDialogState
       isUploading = true;
     });
 
-    String imageUrl = existingImageUrl;
-
-    if (selectedImage != null) {
-      imageUrl =
-      await StorageService.uploadImage(
-        selectedImage!,
-        "profile",
-      );
-    }
+    String finalImageUrl =
+        imageUrl ??
+            existingImageUrl;
 
     final profile = UserProfileModel(
       uid: widget.profile.uid,
@@ -125,7 +139,7 @@ class _EditProfileDialogState
       phone: phoneController.text.trim(),
       faculty: selectedFaculty ?? "",
       year: selectedYear ?? "",
-      imageUrl: imageUrl,
+      imageUrl: finalImageUrl,
     );
 
     await ProfileController.saveProfile(profile);
@@ -148,11 +162,11 @@ class _EditProfileDialogState
             child: Column(
               children: [
 
-                if (selectedImage != null)
+                if (imageUrl != null)
                   CircleAvatar(
                     radius: 60,
                     backgroundImage:
-                    FileImage(selectedImage!),
+                    NetworkImage(imageUrl!),
                   )
                 else if (existingImageUrl.isNotEmpty)
                   CircleAvatar(
@@ -173,10 +187,22 @@ class _EditProfileDialogState
 
                 OutlinedButton.icon(
                   onPressed:
-                  isUploading ? null : pickImage,
-                  icon: const Icon(Icons.photo),
-                  label: const Text(
-                    "Choose Profile Photo",
+                  isUploadingImage
+                      ? null
+                      : pickImage,
+                  icon: isUploadingImage
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Icon(Icons.photo),
+                  label: Text(
+                    imageUrl == null
+                        ? "Choose Profile Photo"
+                        : "Photo Selected ✓",
                   ),
                 ),
 

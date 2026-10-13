@@ -2,17 +2,13 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/submission_model.dart';
+import 'assignment_file_service.dart';
 
 class SubmissionService {
-
   static final FirebaseFirestore firestore =
       FirebaseFirestore.instance;
-
-  static final FirebaseStorage storage =
-      FirebaseStorage.instance;
 
   static final FirebaseAuth auth =
       FirebaseAuth.instance;
@@ -26,22 +22,14 @@ class SubmissionService {
     required String studentName,
     required File file,
   }) async {
-
     final user = auth.currentUser!;
 
-    final fileName =
-        "${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}";
+    final uploadedFile =
+    await AssignmentFileService.uploadFile(file);
 
-    final Reference ref = storage
-        .ref()
-        .child("submissions")
-        .child(user.uid)
-        .child(fileName);
-
-    await ref.putFile(file);
-
-    final fileUrl =
-    await ref.getDownloadURL();
+    if (uploadedFile == null) {
+      throw Exception("File upload failed.");
+    }
 
     final submission = SubmissionModel(
       id: "",
@@ -49,8 +37,10 @@ class SubmissionService {
       studentUid: user.uid,
       studentName: studentName,
       studentEmail: user.email ?? "",
-      fileName: fileName,
-      fileUrl: fileUrl,
+
+      fileName: uploadedFile["name"]!,
+      fileUrl: uploadedFile["url"]!,
+
       submittedAt: DateTime.now(),
       status: "Submitted",
     );
@@ -60,10 +50,9 @@ class SubmissionService {
     );
   }
 
-  /// Check Current Student Submission
+  /// Current Student Submission
   static Stream<SubmissionModel?> getSubmission(
       String assignmentId) {
-
     final user = auth.currentUser!;
 
     return submissions
@@ -78,7 +67,6 @@ class SubmissionService {
         .limit(1)
         .snapshots()
         .map((snapshot) {
-
       if (snapshot.docs.isEmpty) {
         return null;
       }
@@ -92,13 +80,6 @@ class SubmissionService {
   /// Delete Submission
   static Future<void> deleteSubmission(
       SubmissionModel submission) async {
-
-    if (submission.fileUrl.isNotEmpty) {
-      await storage
-          .refFromURL(submission.fileUrl)
-          .delete();
-    }
-
     await submissions
         .doc(submission.id)
         .delete();

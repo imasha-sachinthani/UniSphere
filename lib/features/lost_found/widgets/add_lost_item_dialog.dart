@@ -1,14 +1,12 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/services/image_picker_service.dart';
-import '../../../../core/services/storage_service.dart';
 import '../controllers/lost_found_controller.dart';
 import '../models/lost_found_model.dart';
 
+import '../../../core/services/cloudinary_service.dart';
 class AddLostItemDialog extends StatefulWidget {
   final LostFoundModel? item;
 
@@ -39,9 +37,11 @@ class _AddLostItemDialogState
   final phoneController =
   TextEditingController();
 
-  File? selectedImage;
+  String? imageUrl;
 
   bool isSaving = false;
+
+  bool isUploadingImage = false;
 
   String existingImageUrl = "";
 
@@ -152,15 +152,34 @@ class _AddLostItemDialogState
   }
 
   Future<void> pickImage() async {
-
-    final image =
-    await ImagePickerService.pickImage();
-
-    if (image == null) return;
-
     setState(() {
-      selectedImage = image;
+      isUploadingImage = true;
     });
+
+    try {
+      final url =
+      await CloudinaryService.pickAndUploadImage();
+
+      if (url != null) {
+        setState(() {
+          imageUrl = url;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        isUploadingImage = false;
+      });
+    }
   }
 
   Future<void> saveItem() async {
@@ -174,17 +193,9 @@ class _AddLostItemDialogState
       isSaving = true;
     });
 
-    String imageUrl =
-        existingImageUrl;
-
-    if (selectedImage != null) {
-
-      imageUrl =
-      await StorageService.uploadImage(
-        selectedImage!,
-        "lost_found",
-      );
-    }
+    String finalImageUrl =
+        imageUrl ??
+            existingImageUrl;
 
     final item = LostFoundModel(
 
@@ -214,7 +225,7 @@ class _AddLostItemDialogState
       location:
       locationController.text.trim(),
 
-      imageUrl: imageUrl,
+      imageUrl: finalImageUrl,
 
       claimed:
       widget.item?.claimed ?? false,
@@ -321,14 +332,14 @@ class _AddLostItemDialogState
 
                       /// ---------- IMAGE ----------
 
-                      if (selectedImage != null)
+                        if (imageUrl != null)
 
                   ClipRRect(
                   borderRadius:
                   BorderRadius.circular(14),
 
-              child: Image.file(
-                selectedImage!,
+              child: Image.network(
+                imageUrl!,
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -394,18 +405,26 @@ class _AddLostItemDialogState
 
     const SizedBox(height: 16),
 
-    OutlinedButton.icon(
+                        OutlinedButton.icon(
+                          onPressed:
+                          isUploadingImage ? null : pickImage,
 
-    onPressed:
-    isSaving ? null : pickImage,
+                          icon: isUploadingImage
+                              ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : const Icon(Icons.photo),
 
-    icon:
-    const Icon(Icons.photo),
-
-    label: const Text(
-    "Choose Image",
-    ),
-    ),
+                          label: Text(
+                            imageUrl == null
+                                ? "Choose Image"
+                                : "Image Selected ✓",
+                          ),
+                        ),
 
     if (isSaving)
 

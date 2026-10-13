@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../controllers/submission_controller.dart';
 import '../models/assignment_model.dart';
 import '../models/submission_model.dart';
+import '../screens/pdf_viewer_screen.dart';
 
 class AssignmentDetailsDialog extends StatefulWidget {
   final AssignmentModel assignment;
@@ -28,40 +29,31 @@ class _AssignmentDetailsDialogState
   bool uploading = false;
 
   Future<void> downloadAssignment() async {
+    if (!mounted) return;
 
-    if (widget.assignment.attachmentUrl.isEmpty) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "No attachment available.",
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PdfViewerScreen(
+          title: "Software Process Management Assignment",
+          assetPath:
+          "assets/assignments/Software_Process_management_Assignment_01.pdf",
         ),
-      );
+      ),
+    );
+  }
 
-      return;
-    }
+  Future<void> openSubmission(
+      SubmissionModel submission) async {
 
-    final url =
-    Uri.parse(widget.assignment.attachmentUrl);
+    if (submission.fileUrl.isEmpty) return;
+
+    final url = Uri.parse(submission.fileUrl);
 
     if (await canLaunchUrl(url)) {
-
       await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
-      );
-
-    } else {
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Unable to open attachment.",
-          ),
-        ),
       );
     }
   }
@@ -70,15 +62,14 @@ class _AssignmentDetailsDialogState
 
     final result =
     await FilePicker.platform.pickFiles(
-
       allowMultiple: false,
-
       type: FileType.custom,
-
-      allowedExtensions: [
+      allowedExtensions: const [
         "pdf",
         "doc",
         "docx",
+        "ppt",
+        "pptx",
         "zip",
       ],
     );
@@ -94,36 +85,27 @@ class _AssignmentDetailsDialogState
       uploading = true;
     });
 
-    try {
+    try {       await SubmissionController.uploadSubmission(
+      assignmentId: widget.assignment.id,
+      studentName: "Student",
+      file: file,
+    );
 
-      await SubmissionController.uploadSubmission(
+    if (!mounted) return;
 
-        assignmentId:
-        widget.assignment.id,
-
-        studentName:
-        "Student",
-
-        file: file,
-      );
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Assignment submitted successfully.",
-          ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Assignment submitted successfully.",
         ),
-      );
+      ),
+    );
 
     } catch (e) {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             e.toString(),
@@ -138,82 +120,108 @@ class _AssignmentDetailsDialogState
           uploading = false;
         });
       }
-
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
 
+    final isDark =
+        Theme.of(context).brightness ==
+            Brightness.dark;
+
     return Dialog(
 
         shape: RoundedRectangleBorder(
           borderRadius:
-          BorderRadius.circular(22),
+          BorderRadius.circular(24),
         ),
 
-        child: Padding(
+        child: Container(
 
-            padding:
-            const EdgeInsets.all(22),
+            width: 500,
+
+            padding: const EdgeInsets.all(24),
+
+            decoration: BoxDecoration(
+
+              color: isDark
+                  ? const Color(0xFF1E1E1E)
+                  : Colors.white,
+
+              borderRadius:
+              BorderRadius.circular(24),
+            ),
 
             child: SingleChildScrollView(
 
-                child: Column(
+              child: Column(
 
-                    mainAxisSize:
-                    MainAxisSize.min,
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
 
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
 
-                    children: [
-                Center(
-                child: CircleAvatar(
-                radius: 34,
-                  backgroundColor:
-                  Colors.blue.shade100,
-                  child: const Icon(
-                    Icons.assignment,
-                    size: 34,
-                    color: Colors.blue,
-                  ),
+                children: [
+
+              Center(
+
+              child: CircleAvatar(
+
+              radius: 34,
+
+                backgroundColor:
+                Colors.blue.shade100,
+
+                child: const Icon(
+
+                  Icons.assignment,
+
+                  size: 34,
+
+                  color: Colors.blue,
                 ),
+              ),
             ),
 
             const SizedBox(height: 18),
 
             Center(
-              child: Text(
-                widget.assignment.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight:
-                  FontWeight.bold,
+
+                child: Text(
+                  widget.assignment.title,                  textAlign: TextAlign.center,
+
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                    color: isDark
+                        ? Colors.white
+                        : Colors.black,
+                  ),
                 ),
-              ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 25),
 
             buildTile(
               Icons.book,
               "Module",
               widget.assignment.module,
+              isDark,
             ),
 
             buildTile(
               Icons.person,
               "Lecturer",
               widget.assignment.lecturer,
+              isDark,
             ),
 
             buildTile(
               Icons.school,
               "Semester",
               widget.assignment.semester,
+              isDark,
             ),
 
             buildTile(
@@ -224,16 +232,19 @@ class _AssignmentDetailsDialogState
               ).format(
                 widget.assignment.deadline,
               ),
+              isDark,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            const Text(
+            Text(
               "Description",
               style: TextStyle(
-                fontSize: 17,
-                fontWeight:
-                FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDark
+                    ? Colors.white
+                    : Colors.black,
               ),
             ),
 
@@ -241,12 +252,15 @@ class _AssignmentDetailsDialogState
 
             Text(
               widget.assignment.description,
-              style: const TextStyle(
+              style: TextStyle(
                 height: 1.6,
+                color: isDark
+                    ? Colors.grey.shade300
+                    : Colors.black87,
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
             StreamBuilder<SubmissionModel?>(
                 stream:
@@ -254,6 +268,7 @@ class _AssignmentDetailsDialogState
                     .getSubmission(
                   widget.assignment.id,
                 ),
+
                 builder:
                     (context, snapshot) {
 
@@ -261,80 +276,130 @@ class _AssignmentDetailsDialogState
                       snapshot.data;
 
                   return Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment
-                          .start,
-                      children: [
+
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
+                    children: [
+
                     Container(
+
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+
+                    padding:
+                    const EdgeInsets.all(
+                      16,
+                    ),
+
+                    decoration:
+                    BoxDecoration(
+
+                      color: isDark
+                          ? const Color(
+                        0xFF2A2A2A,
+                      )
+                          : Colors.grey
+                          .shade100,
+
                       borderRadius:
-                      BorderRadius.circular(16),
-                    ),
-                    child: submission == null
-                        ? const Row(
-                      children: [
+                      BorderRadius.circular(
+                        18,
+                      ),
+                    ),                        child: submission == null
 
-                        Icon(
-                          Icons.cancel,
-                          color: Colors.red,
+                      ? Row(
+                    children: [
+
+                      const Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      Text(
+                        "Not Submitted",
+                        style: TextStyle(
+                          fontWeight:
+                          FontWeight.bold,
+                          color: isDark
+                              ? Colors.white
+                              : Colors.black,
                         ),
+                      ),
+                    ],
+                  )
 
-                        SizedBox(width: 10),
+                      : Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment
+                        .start,
+                    children: [
 
-                        Text(
-                          "Not Submitted",
-                          style: TextStyle(
-                            fontWeight:
-                            FontWeight.bold,
+                      Row(
+                        children: [
+
+                          const Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
                           ),
-                        ),
 
-                      ],
-                    )
-                        : Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                      children: [
+                          const SizedBox(width: 12),
 
-                        const Row(
-                          children: [
-
-                            Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
+                          Text(
+                            "Submitted",
+                            style: TextStyle(
+                              fontWeight:
+                              FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
+                          ),
+                        ],
+                      ),
 
-                            SizedBox(width: 10),
+                      const SizedBox(height: 15),
 
-                            Text(
-                              "Submitted",
-                              style: TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
+                      Text(
+                        "📄 ${submission.fileName}",
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        "Submitted : ${DateFormat("dd MMM yyyy • hh:mm a").format(submission.submittedAt)}",
+                        style: TextStyle(
+                          color: isDark
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade700,
+                        ),
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          icon: const Icon(
+                            Icons.open_in_new,
+                          ),
+                          label: const Text(
+                            "Open My Submission",
+                          ),
+                          onPressed: () =>
+                              openSubmission(
+                                submission,
                               ),
-                            ),
-
-                          ],
                         ),
-
-                        const SizedBox(height: 12),
-
-                        Text(
-                          "File : ${submission.fileName}",
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        Text(
-                          "Submitted : "
-                              "${DateFormat("dd MMM yyyy • hh:mm a").format(submission.submittedAt)}",
-                        ),
-
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                   ),
 
                       const SizedBox(height: 24),
@@ -342,18 +407,14 @@ class _AssignmentDetailsDialogState
                       SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-
                       icon: const Icon(
                       Icons.download,
                       ),
-
                       label: const Text(
                       "Download Assignment",
                       ),
-
                       onPressed:
                       downloadAssignment,
-
                       ),
                       ),
 
@@ -362,9 +423,7 @@ class _AssignmentDetailsDialogState
                       SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-
                       icon: uploading
-
                       ? const SizedBox(
                       width: 18,
                       height: 18,
@@ -374,56 +433,111 @@ class _AssignmentDetailsDialogState
                       color: Colors.white,
                       ),
                       )
-
                           : const Icon(
                       Icons.upload_file,
+                      ),                          label: Text(
+                        uploading
+                            ? "Uploading..."
+                            : submission == null
+                            ? "Upload Submission"
+                            : "Replace Submission",
                       ),
 
-                      label: Text(
-
-                      uploading
-
-                      ? "Uploading..."
-
-                          : submission == null
-
-                      ? "Upload Submission"
-
-                          : "Replace Submission",
-
-                      ),
-
-                      onPressed:
-
-                      uploading
-
-                      ? null
-
-                          : uploadSubmission,
-
+                        onPressed: uploading
+                            ? null
+                            : uploadSubmission,
                       ),
                       ),
+
+                      if (submission != null) ...[
+
                         const SizedBox(height: 12),
 
                         SizedBox(
                           width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Close",
+                          child: OutlinedButton.icon(
+
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
                             ),
+
+                            label: const Text(
+                              "Delete Submission",
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            ),
+
+                            onPressed: () async {
+
+                              final confirm =
+                              await showDialog<bool>(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: const Text(
+                                    "Delete Submission",
+                                  ),
+                                  content: const Text(
+                                    "Are you sure you want to delete your submission?",
+                                  ),
+                                  actions: [
+
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                          context,
+                                          false,
+                                        );
+                                      },
+                                      child:
+                                      const Text("Cancel"),
+                                    ),
+
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(
+                                          context,
+                                          true,
+                                        );
+                                      },
+                                      child:
+                                      const Text("Delete"),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                await SubmissionController
+                                    .deleteSubmission(
+                                  submission,
+                                );
+                              }
+                            },
                           ),
                         ),
-
                       ],
+
+                      const SizedBox(height: 16),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Close",
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                     },
             ),
-
-                    ],
-                ),
+                ],
+              ),
             ),
         ),
     );
@@ -433,6 +547,7 @@ class _AssignmentDetailsDialogState
       IconData icon,
       String title,
       String value,
+      bool isDark,
       ) {
     return Padding(
       padding: const EdgeInsets.only(
@@ -456,23 +571,27 @@ class _AssignmentDetailsDialogState
 
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.grey,
+                  style: TextStyle(
+                    color: isDark
+                        ? Colors.grey.shade400
+                        : Colors.grey,
                     fontSize: 13,
                   ),
                 ),
 
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
 
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
+                    fontSize: 16,
                     fontWeight:
                     FontWeight.w600,
-                    fontSize: 16,
+                    color: isDark
+                        ? Colors.white
+                        : Colors.black,
                   ),
                 ),
-
               ],
             ),
           ),
@@ -481,20 +600,14 @@ class _AssignmentDetailsDialogState
     );
   }
 
-  String _getPriorityText() {
-
+  String getPriorityText() {
     switch (widget.assignment.priority) {
-
       case 3:
         return "High";
-
       case 2:
         return "Medium";
-
       default:
         return "Low";
-
     }
-
   }
 }

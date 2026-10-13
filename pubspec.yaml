@@ -15,7 +15,6 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   provider: ^6.1.5
-
   shared_preferences: ^2.5.3
 
   # Firebase
@@ -30,9 +29,16 @@ dependencies:
   # Image Picker
   image_picker: ^1.2.0
 
+  # HTTP
+  http: ^1.5.0
+
   # Utilities
   intl: ^0.20.2
   url_launcher: ^6.3.2
+
+  http_parser: ^4.1.2
+
+  syncfusion_flutter_pdfviewer: ^30.2.7
 
   # Open downloaded files
   open_filex: ^4.7.0
@@ -46,8 +52,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # assets:
-  #   - assets/images/
+  assets:
+    - assets/assignments/
+
+  # If you add images later
+  # - assets/images/
 
   # fonts:
   #   - family: Poppins
